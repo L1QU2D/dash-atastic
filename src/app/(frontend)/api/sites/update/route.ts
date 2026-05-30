@@ -30,9 +30,15 @@ export async function POST(request: NextRequest) {
   const site = await payload.findByID({
     collection: 'sites',
     id: siteId,
+    depth: 0,
   })
 
-  if (!site || site.account !== accountId) {
+  const siteAccountId =
+    typeof site.account === 'object' && site.account !== null
+      ? (site.account as { id: number }).id
+      : site.account
+
+  if (!site || siteAccountId !== accountId) {
     return NextResponse.json({ error: 'Site not found' }, { status: 404 })
   }
 
