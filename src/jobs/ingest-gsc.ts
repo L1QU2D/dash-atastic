@@ -12,10 +12,10 @@ export async function ingestGSCForSite(
   siteId: number,
   gscProperty: string,
 ): Promise<void> {
-  // Pull last 3 days to catch reporting lag
+  // Pull last 9 days so the 7-day chart (offset by 2 days for reporting lag) is always full
   const endDate = new Date()
   const startDate = new Date()
-  startDate.setDate(startDate.getDate() - 3)
+  startDate.setDate(startDate.getDate() - 9)
 
   const formatDate = (d: Date) => d.toISOString().split('T')[0]
 

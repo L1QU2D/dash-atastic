@@ -22,7 +22,7 @@ export async function ingestGA4ForSite(
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        dateRanges: [{ startDate: '3daysAgo', endDate: 'today' }],
+        dateRanges: [{ startDate: '9daysAgo', endDate: 'today' }],
         dimensions: [{ name: 'date' }],
         metrics: [
           { name: 'sessions' },
