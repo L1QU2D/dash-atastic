@@ -50,32 +50,33 @@ export async function ingestGSCForSite(
     }>
   }
 
-  // Fetch indexed page count from Sitemaps API
+  // Count indexed pages by querying pages with impressions (last 28 days for better coverage)
   let indexedPages: number | undefined
   try {
-    const sitemapsRes = await fetch(
-      `${GSC_API_BASE}/sites/${encodeURIComponent(gscProperty)}/sitemaps`,
+    const idxStart = new Date()
+    idxStart.setDate(idxStart.getDate() - 28)
+    const pagesRes = await fetch(
+      `${GSC_API_BASE}/sites/${encodeURIComponent(gscProperty)}/searchAnalytics/query`,
       {
-        headers: { Authorization: `Bearer ${accessToken}` },
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          startDate: formatDate(idxStart),
+          endDate: formatDate(endDate),
+          dimensions: ['page'],
+          rowLimit: 25000,
+        }),
       },
     )
-    if (sitemapsRes.ok) {
-      const sitemapsData = (await sitemapsRes.json()) as {
-        sitemap?: Array<{
-          contents?: Array<{ type: string; submitted: string; indexed: string }>
-        }>
-      }
-      if (sitemapsData.sitemap) {
-        indexedPages = 0
-        for (const sm of sitemapsData.sitemap) {
-          for (const c of sm.contents ?? []) {
-            indexedPages += parseInt(c.indexed, 10) || 0
-          }
-        }
-      }
+    if (pagesRes.ok) {
+      const pagesData = (await pagesRes.json()) as { rows?: Array<unknown> }
+      indexedPages = pagesData.rows?.length ?? 0
     }
   } catch {
-    // Non-critical — skip if sitemaps endpoint fails
+    // Non-critical — skip if pages query fails
   }
 
   if (data.rows) {

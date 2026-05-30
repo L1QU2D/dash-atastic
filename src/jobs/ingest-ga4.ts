@@ -27,7 +27,7 @@ export async function ingestGA4ForSite(
         metrics: [
           { name: 'sessions' },
           { name: 'engagedSessions' },
-          { name: 'conversions' },
+          { name: 'keyEvents' },
         ],
       }),
     },
