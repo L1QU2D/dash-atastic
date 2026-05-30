@@ -50,6 +50,34 @@ export async function ingestGSCForSite(
     }>
   }
 
+  // Fetch indexed page count from Sitemaps API
+  let indexedPages: number | undefined
+  try {
+    const sitemapsRes = await fetch(
+      `${GSC_API_BASE}/sites/${encodeURIComponent(gscProperty)}/sitemaps`,
+      {
+        headers: { Authorization: `Bearer ${accessToken}` },
+      },
+    )
+    if (sitemapsRes.ok) {
+      const sitemapsData = (await sitemapsRes.json()) as {
+        sitemap?: Array<{
+          contents?: Array<{ type: string; submitted: string; indexed: string }>
+        }>
+      }
+      if (sitemapsData.sitemap) {
+        indexedPages = 0
+        for (const sm of sitemapsData.sitemap) {
+          for (const c of sm.contents ?? []) {
+            indexedPages += parseInt(c.indexed, 10) || 0
+          }
+        }
+      }
+    }
+  } catch {
+    // Non-critical — skip if sitemaps endpoint fails
+  }
+
   if (data.rows) {
     for (const row of data.rows) {
       const date = row.keys[0] + 'T00:00:00.000Z'
@@ -58,11 +86,12 @@ export async function ingestGSCForSite(
         impressions: row.impressions,
         ctr: row.ctr,
         avg_position: row.position,
+        ...(indexedPages !== undefined ? { indexed_pages: indexedPages } : {}),
       })
     }
   }
 
-  payload.logger.info(`GSC: processed site ${siteId} (${data.rows?.length || 0} days)`)
+  payload.logger.info(`GSC: processed site ${siteId} (${data.rows?.length || 0} days, ${indexedPages ?? '?'} indexed)`)
 }
 
 /**

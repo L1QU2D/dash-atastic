@@ -86,17 +86,32 @@ export async function POST(request: NextRequest) {
   })
 
   // Pull initial data inline so it's available immediately
+  const ingestion: { gsc?: string; ga4?: string } = {}
+
   try {
     const accessToken = await getValidAccessToken(payload, accountId)
     if (accessToken) {
-      await ingestGSCForSite(payload, accessToken, newSite.id, gscProperty)
+      try {
+        await ingestGSCForSite(payload, accessToken, newSite.id, gscProperty)
+        ingestion.gsc = 'ok'
+      } catch (err) {
+        ingestion.gsc = String(err)
+        payload.logger.error(`GSC ingestion failed for site ${newSite.id}: ${err}`)
+      }
+
       if (ga4PropertyId) {
-        await ingestGA4ForSite(payload, accessToken, newSite.id, ga4PropertyId)
+        try {
+          await ingestGA4ForSite(payload, accessToken, newSite.id, ga4PropertyId)
+          ingestion.ga4 = 'ok'
+        } catch (err) {
+          ingestion.ga4 = String(err)
+          payload.logger.error(`GA4 ingestion failed for site ${newSite.id}: ${err}`)
+        }
       }
     }
   } catch (err) {
-    payload.logger.error(`Initial ingestion failed for site ${newSite.id}: ${err}`)
+    payload.logger.error(`Failed to get access token for site ${newSite.id}: ${err}`)
   }
 
-  return NextResponse.json({ success: true })
+  return NextResponse.json({ success: true, ingestion })
 }
