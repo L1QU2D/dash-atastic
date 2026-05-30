@@ -25,7 +25,9 @@ export const Sites: CollectionConfig = {
     },
     delete: ({ req: { user } }) => {
       if (!user) return false
-      return user.role === 'admin'
+      if (user.role === 'admin') return true
+      const accountId = typeof user.account === 'object' ? user.account.id : user.account
+      return { account: { equals: accountId } }
     },
   },
   fields: [

@@ -6,10 +6,12 @@ import { useRouter } from 'next/navigation'
 export function DeleteSiteButton({ siteId }: { siteId: string | number }) {
   const [confirming, setConfirming] = useState(false)
   const [deleting, setDeleting] = useState(false)
+  const [error, setError] = useState<string | null>(null)
   const router = useRouter()
 
   async function handleDelete() {
     setDeleting(true)
+    setError(null)
     try {
       const res = await fetch(`/api/sites/${siteId}`, {
         method: 'DELETE',
@@ -17,12 +19,13 @@ export function DeleteSiteButton({ siteId }: { siteId: string | number }) {
       })
       if (res.ok) {
         router.refresh()
+      } else {
+        setError('Failed to delete')
       }
     } catch {
-      // Silently fail
+      setError('Failed to delete')
     } finally {
       setDeleting(false)
-      setConfirming(false)
     }
   }
 
@@ -34,14 +37,15 @@ export function DeleteSiteButton({ siteId }: { siteId: string | number }) {
           disabled={deleting}
           className="rounded bg-red-600 px-2 py-0.5 text-[10px] font-semibold text-white hover:bg-red-700 disabled:opacity-50"
         >
-          {deleting ? '...' : 'Confirm'}
+          {deleting ? '...' : error ? 'Retry' : 'Confirm'}
         </button>
         <button
-          onClick={() => setConfirming(false)}
+          onClick={() => { setConfirming(false); setError(null) }}
           className="rounded bg-gray-200 px-2 py-0.5 text-[10px] font-semibold text-gray-600 hover:bg-gray-300"
         >
           Cancel
         </button>
+        {error && <span className="text-[10px] text-red-600">{error}</span>}
       </div>
     )
   }
