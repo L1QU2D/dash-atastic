@@ -3,6 +3,8 @@ import { headers as getHeaders } from 'next/headers.js'
 import { getPayload } from 'payload'
 import config from '@/payload.config'
 import { getUserAccountId } from '@/lib/account'
+import { getValidAccessToken } from '@/lib/google-tokens'
+import { ingestGA4ForSite } from '@/jobs/ingest-ga4'
 
 export async function POST(request: NextRequest) {
   const headers = await getHeaders()
@@ -53,12 +55,16 @@ export async function POST(request: NextRequest) {
     },
   })
 
-  // Queue immediate GA4 ingestion if a property was connected (fire-and-forget)
+  // Pull GA4 data inline if a property was connected
   if (ga4PropertyId) {
-    payload.jobs.queue({
-      task: 'ingest-ga4-site',
-      input: { accountId, siteId },
-    }).catch((err) => payload.logger.error(`Failed to queue GA4 job for site ${siteId}: ${err}`))
+    try {
+      const accessToken = await getValidAccessToken(payload, accountId)
+      if (accessToken) {
+        await ingestGA4ForSite(payload, accessToken, siteId, ga4PropertyId)
+      }
+    } catch (err) {
+      payload.logger.error(`GA4 ingestion failed for site ${siteId}: ${err}`)
+    }
   }
 
   return NextResponse.json({ success: true })

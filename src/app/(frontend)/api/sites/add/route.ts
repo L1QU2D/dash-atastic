@@ -3,6 +3,9 @@ import { headers as getHeaders } from 'next/headers.js'
 import { getPayload } from 'payload'
 import config from '@/payload.config'
 import { getUserAccountId } from '@/lib/account'
+import { getValidAccessToken } from '@/lib/google-tokens'
+import { ingestGSCForSite } from '@/jobs/ingest-gsc'
+import { ingestGA4ForSite } from '@/jobs/ingest-ga4'
 
 /**
  * Derive a clean domain from a GSC property URL.
@@ -82,17 +85,17 @@ export async function POST(request: NextRequest) {
     },
   })
 
-  // Queue immediate ingestion jobs (fire-and-forget — don't block the response)
-  payload.jobs.queue({
-    task: 'ingest-gsc-site',
-    input: { accountId, siteId: newSite.id },
-  }).catch((err) => payload.logger.error(`Failed to queue GSC job for site ${newSite.id}: ${err}`))
-
-  if (ga4PropertyId) {
-    payload.jobs.queue({
-      task: 'ingest-ga4-site',
-      input: { accountId, siteId: newSite.id },
-    }).catch((err) => payload.logger.error(`Failed to queue GA4 job for site ${newSite.id}: ${err}`))
+  // Pull initial data inline so it's available immediately
+  try {
+    const accessToken = await getValidAccessToken(payload, accountId)
+    if (accessToken) {
+      await ingestGSCForSite(payload, accessToken, newSite.id, gscProperty)
+      if (ga4PropertyId) {
+        await ingestGA4ForSite(payload, accessToken, newSite.id, ga4PropertyId)
+      }
+    }
+  } catch (err) {
+    payload.logger.error(`Initial ingestion failed for site ${newSite.id}: ${err}`)
   }
 
   return NextResponse.json({ success: true })
