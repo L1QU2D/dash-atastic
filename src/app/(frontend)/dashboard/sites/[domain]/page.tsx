@@ -19,6 +19,7 @@ import { TimeSeriesChart } from '@/components/TimeSeriesChart'
 import { TierBreakdownBar } from '@/components/TierBreakdownBar'
 import { Funnel } from '@/components/Funnel'
 import { IncidentTimeline } from '@/components/IncidentTimeline'
+import { GA4ConfigButton } from '@/components/GA4ConfigButton'
 
 function formatNumber(n: number): string {
   if (n >= 1_000_000) return (n / 1_000_000).toFixed(1) + 'M'
@@ -203,6 +204,7 @@ export default async function SiteDetailPage({ params, searchParams }: Props) {
             </span>
             <TierTag tier={site.tier} />
             <HealthDot status={health} />
+            <GA4ConfigButton siteId={site.id} currentGa4PropertyId={site.external_ids?.ga4_property_id} />
           </div>
         </div>
         <div className="flex flex-wrap gap-2">

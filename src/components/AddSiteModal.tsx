@@ -9,6 +9,12 @@ interface GSCProperty {
   alreadyAdded: boolean
 }
 
+interface GA4Property {
+  propertyId: string
+  displayName: string
+  alreadyUsed: boolean
+}
+
 interface AddSiteModalProps {
   googleConnected: boolean
 }
@@ -16,12 +22,18 @@ interface AddSiteModalProps {
 export function AddSiteModal({ googleConnected }: AddSiteModalProps) {
   const router = useRouter()
   const [open, setOpen] = useState(false)
-  const [step, setStep] = useState<'pick' | 'configure'>('pick')
+  const [step, setStep] = useState<'pick' | 'ga4' | 'configure'>('pick')
 
   // Pick step state
   const [properties, setProperties] = useState<GSCProperty[]>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+
+  // GA4 step state
+  const [ga4Properties, setGa4Properties] = useState<GA4Property[]>([])
+  const [selectedGa4, setSelectedGa4] = useState<GA4Property | null>(null)
+  const [ga4Loading, setGa4Loading] = useState(false)
+  const [ga4Error, setGa4Error] = useState('')
 
   // Configure step state
   const [selected, setSelected] = useState<GSCProperty | null>(null)
@@ -36,7 +48,9 @@ export function AddSiteModal({ googleConnected }: AddSiteModalProps) {
     setOpen(true)
     setStep('pick')
     setSelected(null)
+    setSelectedGa4(null)
     setError('')
+    setGa4Error('')
     setSubmitError('')
     if (googleConnected) {
       fetchProperties()
@@ -66,6 +80,25 @@ export function AddSiteModal({ googleConnected }: AddSiteModalProps) {
     }
   }
 
+  async function fetchGa4Properties() {
+    setGa4Loading(true)
+    setGa4Error('')
+    try {
+      const res = await fetch('/api/google/ga4-properties')
+      if (!res.ok) {
+        const errData: { error?: string } = await res.json()
+        setGa4Error(errData.error || 'Failed to load GA4 properties')
+        return
+      }
+      const data: { properties?: GA4Property[] } = await res.json()
+      setGa4Properties(data.properties || [])
+    } catch {
+      setGa4Error('Failed to connect to server')
+    } finally {
+      setGa4Loading(false)
+    }
+  }
+
   function selectProperty(prop: GSCProperty) {
     if (prop.alreadyAdded) return
     setSelected(prop)
@@ -82,7 +115,20 @@ export function AddSiteModal({ googleConnected }: AddSiteModalProps) {
     setNiche('Uncategorized')
     setMarket('US')
     setTier('3')
+    setSelectedGa4(null)
     setSubmitError('')
+    setStep('ga4')
+    fetchGa4Properties()
+  }
+
+  function selectGa4(prop: GA4Property) {
+    if (prop.alreadyUsed) return
+    setSelectedGa4(prop)
+    setStep('configure')
+  }
+
+  function skipGa4() {
+    setSelectedGa4(null)
     setStep('configure')
   }
 
@@ -102,6 +148,7 @@ export function AddSiteModal({ googleConnected }: AddSiteModalProps) {
           niche,
           market,
           tier,
+          ...(selectedGa4 ? { ga4PropertyId: selectedGa4.propertyId } : {}),
         }),
       })
 
@@ -130,6 +177,13 @@ export function AddSiteModal({ googleConnected }: AddSiteModalProps) {
     return () => document.removeEventListener('keydown', handleKey)
   }, [open])
 
+  const stepTitle =
+    step === 'pick'
+      ? 'Add Site from Search Console'
+      : step === 'ga4'
+        ? 'Connect GA4 Property'
+        : 'Configure Site'
+
   return (
     <>
       <button
@@ -150,7 +204,7 @@ export function AddSiteModal({ googleConnected }: AddSiteModalProps) {
             {/* Header */}
             <div className="flex items-center justify-between border-b border-[var(--border)] px-6 py-4">
               <h2 className="m-0 text-lg font-bold text-[var(--brand-dark)]">
-                {step === 'pick' ? 'Add Site from Search Console' : 'Configure Site'}
+                {stepTitle}
               </h2>
               <button
                 onClick={closeModal}
@@ -216,6 +270,67 @@ export function AddSiteModal({ googleConnected }: AddSiteModalProps) {
                     </ul>
                   )}
                 </>
+              ) : step === 'ga4' ? (
+                <>
+                  <p className="mb-3 text-sm text-[var(--text-muted)]">
+                    Optionally link a GA4 property to pull analytics data for this site.
+                  </p>
+                  {ga4Loading && (
+                    <p className="text-center text-sm text-[var(--text-muted)]">
+                      Loading GA4 properties...
+                    </p>
+                  )}
+                  {ga4Error && (
+                    <p className="text-center text-sm text-[var(--bad)]">{ga4Error}</p>
+                  )}
+                  {!ga4Loading && !ga4Error && ga4Properties.length === 0 && (
+                    <p className="text-center text-sm text-[var(--text-muted)]">
+                      No GA4 properties found for this Google account.
+                    </p>
+                  )}
+                  {!ga4Loading && ga4Properties.length > 0 && (
+                    <ul className="m-0 max-h-80 list-none overflow-y-auto p-0">
+                      {ga4Properties.map((prop) => (
+                        <li key={prop.propertyId}>
+                          <button
+                            onClick={() => selectGa4(prop)}
+                            disabled={prop.alreadyUsed}
+                            className={`w-full border-none px-4 py-3 text-left ${
+                              prop.alreadyUsed
+                                ? 'cursor-not-allowed bg-[var(--surface-alt)] opacity-50'
+                                : 'cursor-pointer bg-transparent hover:bg-[var(--brand-soft)]'
+                            } rounded-lg`}
+                          >
+                            <div className="text-sm font-medium text-[var(--text)]">
+                              {prop.displayName}
+                            </div>
+                            <div className="mt-0.5 text-xs text-[var(--text-muted)]">
+                              {prop.alreadyUsed
+                                ? 'Already linked'
+                                : `Property ID: ${prop.propertyId}`}
+                            </div>
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                  <div className="mt-4 flex items-center gap-3">
+                    <button
+                      type="button"
+                      onClick={() => setStep('pick')}
+                      className="rounded-md border border-[var(--border)] bg-white px-4 py-2 text-[13px] font-medium text-[var(--text)]"
+                    >
+                      Back
+                    </button>
+                    <button
+                      type="button"
+                      onClick={skipGa4}
+                      className="rounded-md border border-[var(--border)] bg-white px-4 py-2 text-[13px] font-medium text-[var(--text)]"
+                    >
+                      Skip
+                    </button>
+                  </div>
+                </>
               ) : (
                 <form onSubmit={handleSubmit}>
                   <div className="mb-4">
@@ -223,6 +338,17 @@ export function AddSiteModal({ googleConnected }: AddSiteModalProps) {
                       GSC Property
                     </label>
                     <div className="text-sm text-[var(--text)]">{selected?.siteUrl}</div>
+                  </div>
+
+                  <div className="mb-4">
+                    <label className="mb-1 block text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)]">
+                      GA4 Property
+                    </label>
+                    <div className="text-sm text-[var(--text)]">
+                      {selectedGa4
+                        ? `${selectedGa4.displayName} (${selectedGa4.propertyId})`
+                        : 'None'}
+                    </div>
                   </div>
 
                   <div className="mb-4">
@@ -288,7 +414,7 @@ export function AddSiteModal({ googleConnected }: AddSiteModalProps) {
                   <div className="flex items-center gap-3">
                     <button
                       type="button"
-                      onClick={() => setStep('pick')}
+                      onClick={() => setStep('ga4')}
                       className="rounded-md border border-[var(--border)] bg-white px-4 py-2 text-[13px] font-medium text-[var(--text)]"
                     >
                       Back

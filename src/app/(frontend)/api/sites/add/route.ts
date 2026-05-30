@@ -38,8 +38,9 @@ export async function POST(request: NextRequest) {
     niche?: string
     market?: string
     tier?: string
+    ga4PropertyId?: string
   }
-  const { gscProperty, niche, market, tier } = body
+  const { gscProperty, niche, market, tier, ga4PropertyId } = body
 
   if (!gscProperty) {
     return NextResponse.json(
@@ -76,6 +77,7 @@ export async function POST(request: NextRequest) {
       tier: (tier || '3') as '1' | '2' | '3' | '4' | '5',
       external_ids: {
         gsc_property: gscProperty,
+        ...(ga4PropertyId ? { ga4_property_id: ga4PropertyId } : {}),
       },
     },
   })
