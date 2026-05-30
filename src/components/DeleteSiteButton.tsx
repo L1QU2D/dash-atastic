@@ -13,9 +13,11 @@ export function DeleteSiteButton({ siteId }: { siteId: string | number }) {
     setDeleting(true)
     setError(null)
     try {
-      const res = await fetch(`/api/sites/${siteId}`, {
-        method: 'DELETE',
+      const res = await fetch('/api/sites/delete', {
+        method: 'POST',
         credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ siteId }),
       })
       if (res.ok) {
         router.refresh()
