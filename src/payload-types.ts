@@ -67,8 +67,16 @@ export interface Config {
   };
   blocks: {};
   collections: {
+    accounts: Account;
     users: User;
     media: Media;
+    sites: Site;
+    site_metrics_daily: SiteMetricsDaily;
+    link_placements: LinkPlacement;
+    alerts: Alert;
+    alert_configs: AlertConfig;
+    incidents: Incident;
+    content_events: ContentEvent;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -76,8 +84,16 @@ export interface Config {
   };
   collectionsJoins: {};
   collectionsSelect: {
+    accounts: AccountsSelect<false> | AccountsSelect<true>;
     users: UsersSelect<false> | UsersSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
+    sites: SitesSelect<false> | SitesSelect<true>;
+    site_metrics_daily: SiteMetricsDailySelect<false> | SiteMetricsDailySelect<true>;
+    link_placements: LinkPlacementsSelect<false> | LinkPlacementsSelect<true>;
+    alerts: AlertsSelect<false> | AlertsSelect<true>;
+    alert_configs: AlertConfigsSelect<false> | AlertConfigsSelect<true>;
+    incidents: IncidentsSelect<false> | IncidentsSelect<true>;
+    content_events: ContentEventsSelect<false> | ContentEventsSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -87,8 +103,14 @@ export interface Config {
     defaultIDType: number;
   };
   fallbackLocale: null;
-  globals: {};
-  globalsSelect: {};
+  globals: {
+    branding: Branding;
+    network_defaults: NetworkDefault;
+  };
+  globalsSelect: {
+    branding: BrandingSelect<false> | BrandingSelect<true>;
+    network_defaults: NetworkDefaultsSelect<false> | NetworkDefaultsSelect<true>;
+  };
   locale: null;
   widgets: {
     collections: CollectionsWidget;
@@ -119,10 +141,40 @@ export interface UserAuthOperations {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "accounts".
+ */
+export interface Account {
+  id: number;
+  name: string;
+  google_oauth?: {
+    google_email?: string | null;
+    google_refresh_token?: string | null;
+    google_access_token?: string | null;
+    google_token_expiry?: string | null;
+    google_connected_at?: string | null;
+    google_scopes?:
+      | {
+          [k: string]: unknown;
+        }
+      | unknown[]
+      | string
+      | number
+      | boolean
+      | null;
+  };
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "users".
  */
 export interface User {
   id: number;
+  account: number | Account;
+  role: 'admin' | 'operator' | 'viewer';
+  mfa_enabled?: boolean | null;
+  last_login_at?: string | null;
   updatedAt: string;
   createdAt: string;
   email: string;
@@ -161,6 +213,207 @@ export interface Media {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "sites".
+ */
+export interface Site {
+  id: number;
+  account: number | Account;
+  domain: string;
+  status: 'active' | 'standby' | 'decommissioned' | 'redirected';
+  niche: string;
+  niche_group?: string | null;
+  market: string;
+  tier: '1' | '2' | '3' | '4' | '5';
+  pinned?: boolean | null;
+  launched_at?: string | null;
+  successor_of?: (number | null) | Site;
+  standby_for?: (number | null) | Site;
+  hosting_provider?: string | null;
+  notes?: string | null;
+  external_ids?: {
+    gsc_property?: string | null;
+    ga4_property_id?: string | null;
+    subaffiliate_tracking_id?: string | null;
+  };
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "site_metrics_daily".
+ */
+export interface SiteMetricsDaily {
+  id: number;
+  site: number | Site;
+  date: string;
+  clicks?: number | null;
+  impressions?: number | null;
+  ctr?: number | null;
+  avg_position?: number | null;
+  indexed_pages?: number | null;
+  crawl_errors?: number | null;
+  sessions?: number | null;
+  engaged_sessions?: number | null;
+  affiliate_clicks?: number | null;
+  conversions?: number | null;
+  revenue_eur?: number | null;
+  uptime_pct?: number | null;
+  lcp_ms?: number | null;
+  inp_ms?: number | null;
+  cls?: number | null;
+  source_versions?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "link_placements".
+ */
+export interface LinkPlacement {
+  id: number;
+  site: number | Site;
+  target_url: string;
+  source_domain: string;
+  source_url?: string | null;
+  anchor_text?: string | null;
+  tier: '1' | '2' | '3' | '4' | '5';
+  dr?: number | null;
+  placed_at: string;
+  status: 'live' | 'pending' | 'lost' | 'replaced';
+  kind?: ('guest_post' | 'link_insert' | 'press_release' | 'editorial' | 'forum_social' | 'directory') | null;
+  cost_eur?: number | null;
+  verified_at?: string | null;
+  notes?: string | null;
+  redirect_replacement?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "alerts".
+ */
+export interface Alert {
+  id: number;
+  site: number | Site;
+  kind: 'indexation_drop' | 'ranking_collapse' | 'manual_action' | 'traffic_anomaly' | 'link_velocity' | 'uptime_cwv';
+  severity: 'critical' | 'warning' | 'info';
+  status: 'open' | 'acknowledged' | 'resolved';
+  triggered_at: string;
+  acknowledged_at?: string | null;
+  acknowledged_by?: (number | null) | User;
+  resolved_at?: string | null;
+  signal?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  note?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "alert_configs".
+ */
+export interface AlertConfig {
+  id: number;
+  site?: (number | null) | Site;
+  kind: 'indexation_drop' | 'ranking_collapse' | 'manual_action' | 'traffic_anomaly' | 'link_velocity' | 'uptime_cwv';
+  enabled?: boolean | null;
+  threshold?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "incidents".
+ */
+export interface Incident {
+  id: number;
+  site: number | Site;
+  title: string;
+  started_at: string;
+  resolved_at?: string | null;
+  outcome?: ('recovered' | 'failed_over' | 'decommissioned' | 'ongoing') | null;
+  summary?: string | null;
+  linked_alerts?: (number | Alert)[] | null;
+  actions_taken?:
+    | {
+        description: string;
+        at?: string | null;
+        by?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  post_mortem?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "content_events".
+ */
+export interface ContentEvent {
+  id: number;
+  site: number | Site;
+  kind: 'generated' | 'updated' | 'pruned' | 'editorial';
+  count: number;
+  at: string;
+  template?: string | null;
+  note?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv".
  */
 export interface PayloadKv {
@@ -184,12 +437,44 @@ export interface PayloadLockedDocument {
   id: number;
   document?:
     | ({
+        relationTo: 'accounts';
+        value: number | Account;
+      } | null)
+    | ({
         relationTo: 'users';
         value: number | User;
       } | null)
     | ({
         relationTo: 'media';
         value: number | Media;
+      } | null)
+    | ({
+        relationTo: 'sites';
+        value: number | Site;
+      } | null)
+    | ({
+        relationTo: 'site_metrics_daily';
+        value: number | SiteMetricsDaily;
+      } | null)
+    | ({
+        relationTo: 'link_placements';
+        value: number | LinkPlacement;
+      } | null)
+    | ({
+        relationTo: 'alerts';
+        value: number | Alert;
+      } | null)
+    | ({
+        relationTo: 'alert_configs';
+        value: number | AlertConfig;
+      } | null)
+    | ({
+        relationTo: 'incidents';
+        value: number | Incident;
+      } | null)
+    | ({
+        relationTo: 'content_events';
+        value: number | ContentEvent;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -235,9 +520,32 @@ export interface PayloadMigration {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "accounts_select".
+ */
+export interface AccountsSelect<T extends boolean = true> {
+  name?: T;
+  google_oauth?:
+    | T
+    | {
+        google_email?: T;
+        google_refresh_token?: T;
+        google_access_token?: T;
+        google_token_expiry?: T;
+        google_connected_at?: T;
+        google_scopes?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "users_select".
  */
 export interface UsersSelect<T extends boolean = true> {
+  account?: T;
+  role?: T;
+  mfa_enabled?: T;
+  last_login_at?: T;
   updatedAt?: T;
   createdAt?: T;
   email?: T;
@@ -270,6 +578,150 @@ export interface MediaSelect<T extends boolean = true> {
   filesize?: T;
   width?: T;
   height?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "sites_select".
+ */
+export interface SitesSelect<T extends boolean = true> {
+  account?: T;
+  domain?: T;
+  status?: T;
+  niche?: T;
+  niche_group?: T;
+  market?: T;
+  tier?: T;
+  pinned?: T;
+  launched_at?: T;
+  successor_of?: T;
+  standby_for?: T;
+  hosting_provider?: T;
+  notes?: T;
+  external_ids?:
+    | T
+    | {
+        gsc_property?: T;
+        ga4_property_id?: T;
+        subaffiliate_tracking_id?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "site_metrics_daily_select".
+ */
+export interface SiteMetricsDailySelect<T extends boolean = true> {
+  site?: T;
+  date?: T;
+  clicks?: T;
+  impressions?: T;
+  ctr?: T;
+  avg_position?: T;
+  indexed_pages?: T;
+  crawl_errors?: T;
+  sessions?: T;
+  engaged_sessions?: T;
+  affiliate_clicks?: T;
+  conversions?: T;
+  revenue_eur?: T;
+  uptime_pct?: T;
+  lcp_ms?: T;
+  inp_ms?: T;
+  cls?: T;
+  source_versions?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "link_placements_select".
+ */
+export interface LinkPlacementsSelect<T extends boolean = true> {
+  site?: T;
+  target_url?: T;
+  source_domain?: T;
+  source_url?: T;
+  anchor_text?: T;
+  tier?: T;
+  dr?: T;
+  placed_at?: T;
+  status?: T;
+  kind?: T;
+  cost_eur?: T;
+  verified_at?: T;
+  notes?: T;
+  redirect_replacement?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "alerts_select".
+ */
+export interface AlertsSelect<T extends boolean = true> {
+  site?: T;
+  kind?: T;
+  severity?: T;
+  status?: T;
+  triggered_at?: T;
+  acknowledged_at?: T;
+  acknowledged_by?: T;
+  resolved_at?: T;
+  signal?: T;
+  note?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "alert_configs_select".
+ */
+export interface AlertConfigsSelect<T extends boolean = true> {
+  site?: T;
+  kind?: T;
+  enabled?: T;
+  threshold?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "incidents_select".
+ */
+export interface IncidentsSelect<T extends boolean = true> {
+  site?: T;
+  title?: T;
+  started_at?: T;
+  resolved_at?: T;
+  outcome?: T;
+  summary?: T;
+  linked_alerts?: T;
+  actions_taken?:
+    | T
+    | {
+        description?: T;
+        at?: T;
+        by?: T;
+        id?: T;
+      };
+  post_mortem?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "content_events_select".
+ */
+export interface ContentEventsSelect<T extends boolean = true> {
+  site?: T;
+  kind?: T;
+  count?: T;
+  at?: T;
+  template?: T;
+  note?: T;
+  updatedAt?: T;
+  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -310,6 +762,79 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
   batch?: T;
   updatedAt?: T;
   createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "branding".
+ */
+export interface Branding {
+  id: number;
+  product_name: string;
+  customer_tag?: string | null;
+  primary_color?: string | null;
+  dark_color?: string | null;
+  soft_color?: string | null;
+  logo_initials?: string | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "network_defaults".
+ */
+export interface NetworkDefault {
+  id: number;
+  default_alert_thresholds?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  /**
+   * Days between content refresh cycles
+   */
+  content_refresh_cadence?: number | null;
+  link_velocity_bands?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "branding_select".
+ */
+export interface BrandingSelect<T extends boolean = true> {
+  product_name?: T;
+  customer_tag?: T;
+  primary_color?: T;
+  dark_color?: T;
+  soft_color?: T;
+  logo_initials?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "network_defaults_select".
+ */
+export interface NetworkDefaultsSelect<T extends boolean = true> {
+  default_alert_thresholds?: T;
+  content_refresh_cadence?: T;
+  link_velocity_bands?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

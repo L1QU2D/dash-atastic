@@ -1,0 +1,1161 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>crypto-casinos-us.com · Site detail · WildBridge</title>
+<style>
+  :root {
+    --brand: #2E75B6;
+    --brand-dark: #1F4E79;
+    --brand-soft: #EAF1F7;
+    --brand-border: #BDD7EE;
+    --bg: #F4F6FA;
+    --card: #FFFFFF;
+    --text: #1F2937;
+    --text-muted: #6B7280;
+    --border: #E5E7EB;
+    --good: #15803D;
+    --good-soft: #DCFCE7;
+    --warn: #B45309;
+    --warn-soft: #FEF3C7;
+    --bad: #B91C1C;
+    --bad-soft: #FEE2E2;
+    --tier1: #6D28D9;
+    --tier2: #2563EB;
+    --tier3: #0891B2;
+    --tier4: #0F766E;
+    --tier5: #4B5563;
+    --chart-clicks: #2E75B6;
+    --chart-impressions: #6D28D9;
+    --chart-rev: #15803D;
+    --chart-sessions: #0891B2;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 14px;
+    line-height: 1.45;
+  }
+  a { color: var(--brand); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+
+  /* TOP BAR */
+  .topbar {
+    background: var(--brand-dark);
+    color: #fff;
+    padding: 14px 28px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 3px solid var(--brand);
+  }
+  .brand { display: flex; align-items: center; gap: 14px; }
+  .brand-mark {
+    width: 32px; height: 32px; background: var(--brand); border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 16px; color: #fff; letter-spacing: -0.5px;
+  }
+  .brand-text { display: flex; flex-direction: column; line-height: 1.1; }
+  .brand-text .product { font-weight: 600; font-size: 15px; }
+  .brand-text .client { font-size: 11px; opacity: 0.75; letter-spacing: 0.4px; text-transform: uppercase; }
+  .topbar-right { display: flex; align-items: center; gap: 22px; font-size: 13px; opacity: 0.9; }
+  .topbar-right .user { display: flex; gap: 8px; align-items: center; }
+  .topbar-right .avatar {
+    width: 26px; height: 26px; border-radius: 50%;
+    background: var(--brand); display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 600;
+  }
+
+  /* CONTAINER */
+  .container { max-width: 1480px; margin: 0 auto; padding: 18px 28px 64px; }
+
+  /* BREADCRUMB & SITE HEADER */
+  .breadcrumb { font-size: 13px; color: var(--text-muted); margin-bottom: 14px; }
+  .breadcrumb a { color: var(--brand); font-weight: 500; }
+  .breadcrumb .crumb-sep { margin: 0 8px; color: var(--border); }
+
+  .site-header {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px 24px;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+  .site-identity { flex: 1 1 480px; }
+  .site-identity h1 {
+    margin: 0 0 6px;
+    color: var(--brand-dark);
+    font-size: 26px;
+    font-weight: 700;
+    letter-spacing: -0.3px;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  .site-identity h1 .visit {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--brand);
+    background: var(--brand-soft);
+    padding: 3px 10px;
+    border-radius: 6px;
+  }
+  .site-identity .meta-line {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    align-items: center;
+    color: var(--text-muted);
+    font-size: 13px;
+  }
+  .site-identity .meta-line .pill {
+    background: var(--brand-soft);
+    color: var(--brand-dark);
+    padding: 2px 9px;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+  }
+  .site-identity .meta-line .tier-badge {
+    background: var(--tier1);
+    color: #fff;
+    padding: 2px 9px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.4px;
+  }
+  .site-identity .meta-line .health {
+    display: inline-flex;
+    gap: 6px;
+    align-items: center;
+    color: var(--good);
+    font-weight: 600;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+  }
+  .site-identity .meta-line .health::before {
+    content: "";
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--good);
+    box-shadow: 0 0 0 3px var(--good-soft);
+  }
+  .site-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+  .btn {
+    border: 1px solid var(--border);
+    background: var(--card);
+    padding: 7px 14px;
+    border-radius: 7px;
+    font-size: 13px;
+    cursor: pointer;
+    color: var(--text);
+    font-weight: 500;
+  }
+  .btn.primary { background: var(--brand); color: #fff; border-color: var(--brand); }
+  .btn:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+
+  /* PERIOD PICKER ROW */
+  .period-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .period-row .last-check {
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+  .last-check .ok {
+    color: var(--good);
+    font-weight: 600;
+  }
+  .period-picker {
+    display: flex;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 2px;
+    font-size: 12px;
+  }
+  .period-picker button {
+    border: none; background: transparent;
+    padding: 6px 14px; cursor: pointer; border-radius: 6px;
+    color: var(--text-muted); font-weight: 500;
+  }
+  .period-picker button.active { background: var(--brand); color: #fff; }
+
+  /* KPI ROW */
+  .kpi-row {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 12px;
+    margin-bottom: 22px;
+  }
+  .kpi {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 16px;
+  }
+  .kpi .label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    color: var(--text-muted);
+    font-weight: 600;
+  }
+  .kpi .value {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--brand-dark);
+    margin-top: 4px;
+    letter-spacing: -0.3px;
+  }
+  .kpi .footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-top: 4px;
+  }
+  .kpi .delta { font-size: 12px; font-weight: 600; }
+  .delta.up { color: var(--good); }
+  .delta.down { color: var(--bad); }
+  .delta.flat { color: var(--text-muted); }
+  .spark-kpi { width: 70px; height: 22px; }
+
+  /* PANEL */
+  .panel {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px 22px;
+    margin-bottom: 20px;
+  }
+  .panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 14px;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .panel-title {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--brand-dark);
+    letter-spacing: -0.2px;
+  }
+  .panel-subtitle {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 2px;
+  }
+  .panel-tabs {
+    display: flex;
+    gap: 4px;
+    background: var(--bg);
+    border-radius: 7px;
+    padding: 2px;
+    font-size: 12px;
+  }
+  .panel-tabs button {
+    border: none; background: transparent;
+    padding: 5px 12px; border-radius: 5px;
+    cursor: pointer; color: var(--text-muted); font-weight: 500;
+  }
+  .panel-tabs button.active { background: var(--card); color: var(--brand-dark); box-shadow: 0 1px 2px rgba(0,0,0,0.04); }
+
+  /* TWO-COLUMN PANEL GROUPS */
+  .two-col {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 20px;
+    margin-bottom: 20px;
+  }
+  .three-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 20px;
+    margin-bottom: 20px;
+  }
+  @media (max-width: 1100px) {
+    .two-col, .three-col { grid-template-columns: 1fr; }
+    .kpi-row { grid-template-columns: repeat(3, 1fr); }
+  }
+  @media (max-width: 700px) {
+    .kpi-row { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  /* CHART AREAS */
+  .chart-wrap {
+    background: #FBFCFD;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px;
+    margin-top: 6px;
+  }
+  .chart-legend {
+    display: flex;
+    gap: 18px;
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-bottom: 10px;
+  }
+  .chart-legend .swatch {
+    display: inline-block;
+    width: 11px; height: 11px; border-radius: 2px;
+    margin-right: 5px;
+    vertical-align: middle;
+  }
+  svg.chart { display: block; width: 100%; height: auto; }
+
+  /* TABLES */
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th {
+    text-align: left;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    font-size: 10.5px;
+    letter-spacing: 0.5px;
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--border);
+    background: #FAFBFC;
+  }
+  th.right, td.right { text-align: right; }
+  td {
+    padding: 9px 12px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text);
+  }
+  tr:last-child td { border-bottom: none; }
+  td.dim { color: var(--text-muted); }
+  td.up { color: var(--good); font-weight: 600; }
+  td.down { color: var(--bad); font-weight: 600; }
+  td.muted-spark { width: 80px; }
+  td.tier-cell { width: 64px; }
+  .tier-tag {
+    display: inline-block;
+    color: #fff;
+    padding: 2px 7px;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.4px;
+  }
+  .tier-tag.t1 { background: var(--tier1); }
+  .tier-tag.t2 { background: var(--tier2); }
+  .tier-tag.t3 { background: var(--tier3); }
+  .tier-tag.t4 { background: var(--tier4); }
+  .tier-tag.t5 { background: var(--tier5); }
+
+  /* DELTA CHIPS */
+  .chip-delta {
+    display: inline-block;
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 600;
+  }
+  .chip-delta.up { background: var(--good-soft); color: var(--good); }
+  .chip-delta.down { background: var(--bad-soft); color: var(--bad); }
+  .chip-delta.flat { background: #F3F4F6; color: var(--text-muted); }
+
+  /* FUNNEL */
+  .funnel {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-top: 4px;
+  }
+  .funnel-step {
+    background: var(--brand-soft);
+    color: var(--brand-dark);
+    padding: 10px 14px;
+    border-radius: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 13px;
+    font-weight: 600;
+  }
+  .funnel-step .val { font-weight: 700; color: var(--brand-dark); }
+  .funnel-step .pct { font-size: 11px; color: var(--text-muted); font-weight: 500; }
+  .funnel-step.step-1 { width: 100%; }
+  .funnel-step.step-2 { width: 86%; }
+  .funnel-step.step-3 { width: 38%; background: #DBE9F7; }
+  .funnel-step.step-4 { width: 19%; background: #D1E0EE; }
+  .funnel-step.step-5 { width: 12%; background: #C2D5E8; color: var(--good); }
+
+  /* TIER BREAKDOWN BAR */
+  .tier-breakdown {
+    display: flex;
+    height: 18px;
+    border-radius: 6px;
+    overflow: hidden;
+    margin: 8px 0 14px;
+    border: 1px solid var(--border);
+  }
+  .tier-breakdown .seg {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+  }
+  .tier-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+  .tier-legend .li::before {
+    content: "";
+    display: inline-block;
+    width: 10px; height: 10px;
+    border-radius: 2px;
+    margin-right: 5px;
+    vertical-align: middle;
+  }
+  .tier-legend .li.t1::before { background: var(--tier1); }
+  .tier-legend .li.t2::before { background: var(--tier2); }
+  .tier-legend .li.t3::before { background: var(--tier3); }
+  .tier-legend .li.t4::before { background: var(--tier4); }
+  .tier-legend .li.t5::before { background: var(--tier5); }
+
+  /* CONTENT PIPELINE STATS */
+  .pipe-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+  }
+  .pipe-stat {
+    background: #FBFCFD;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 14px;
+  }
+  .pipe-stat .label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-muted);
+    font-weight: 600;
+  }
+  .pipe-stat .value {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--brand-dark);
+    margin-top: 2px;
+  }
+  .pipe-stat .sub { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+
+  /* TIMELINE */
+  .timeline { position: relative; padding-left: 22px; }
+  .timeline::before {
+    content: "";
+    position: absolute;
+    left: 7px;
+    top: 6px;
+    bottom: 6px;
+    width: 2px;
+    background: var(--border);
+  }
+  .timeline-item {
+    position: relative;
+    padding-bottom: 18px;
+  }
+  .timeline-item:last-child { padding-bottom: 0; }
+  .timeline-item::before {
+    content: "";
+    position: absolute;
+    left: -22px;
+    top: 5px;
+    width: 14px; height: 14px;
+    border-radius: 50%;
+    background: var(--card);
+    border: 3px solid var(--good);
+  }
+  .timeline-item.warn::before { border-color: var(--warn); }
+  .timeline-item.bad::before { border-color: var(--bad); }
+  .timeline-item.info::before { border-color: var(--brand); }
+  .timeline-item .when {
+    font-size: 11px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    font-weight: 600;
+  }
+  .timeline-item .what {
+    font-size: 13px;
+    color: var(--text);
+    margin-top: 2px;
+    font-weight: 500;
+  }
+  .timeline-item .why {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 2px;
+    line-height: 1.4;
+  }
+
+  /* INDEXATION STATUS GRID */
+  .indexation-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+  }
+  .indexation-grid .stat {
+    background: #FBFCFD;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 14px;
+  }
+  .indexation-grid .stat .label {
+    font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px;
+    color: var(--text-muted); font-weight: 600;
+  }
+  .indexation-grid .stat .value {
+    font-size: 20px; font-weight: 700; color: var(--brand-dark); margin-top: 2px;
+  }
+
+  /* SCORE STRIP for top queries (sparkline + position) */
+  .position-sparkline { display: flex; align-items: center; gap: 6px; }
+  .position-sparkline .pos {
+    font-weight: 700;
+    color: var(--brand-dark);
+    min-width: 30px;
+    text-align: right;
+  }
+
+  /* FOOTER */
+  .footer-note {
+    margin-top: 24px;
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 11px;
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="brand">
+    <div class="brand-mark">WB</div>
+    <div class="brand-text">
+      <div class="product">WildBridge Network Operations</div>
+      <div class="client">Cat Media · Managed Network</div>
+    </div>
+  </div>
+  <div class="topbar-right">
+    <span>Network: <strong>50 sites</strong></span>
+    <span>•</span>
+    <span>Last refresh: 14 min ago</span>
+    <div class="user">
+      <div class="avatar">CM</div>
+      <span>catmedia.exec</span>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+  <div class="breadcrumb">
+    <a href="dashboard_mockup.html">← Network overview</a>
+    <span class="crumb-sep">/</span>
+    <span>Site detail</span>
+    <span class="crumb-sep">/</span>
+    <span style="color:var(--text);">crypto-casinos-us.com</span>
+  </div>
+
+  <!-- SITE HEADER -->
+  <div class="site-header">
+    <div class="site-identity">
+      <h1>crypto-casinos-us.com <span class="visit">↗ visit site</span></h1>
+      <div class="meta-line">
+        <span>US crypto casinos · niche group: payment-method</span>
+        <span class="pill">MARKET · US</span>
+        <span class="tier-badge">TIER 1</span>
+        <span class="health">Healthy</span>
+      </div>
+    </div>
+    <div class="site-actions">
+      <button class="btn">Pin to overview</button>
+      <button class="btn">Open incident log</button>
+      <button class="btn">Download report</button>
+      <button class="btn primary">Edit link plan</button>
+    </div>
+  </div>
+
+  <!-- PERIOD PICKER -->
+  <div class="period-row">
+    <div class="last-check">
+      Last manual review: <span class="ok">✓ All checks passed</span>, 3 days ago by ops.wildbridge
+    </div>
+    <div class="period-picker">
+      <button>7d</button>
+      <button class="active">28d</button>
+      <button>90d</button>
+      <button>12m</button>
+      <button>Custom</button>
+    </div>
+  </div>
+
+  <!-- KPI ROW -->
+  <div class="kpi-row" id="kpi-row"></div>
+
+  <!-- GSC PERFORMANCE -->
+  <div class="panel">
+    <div class="panel-header">
+      <div>
+        <h2 class="panel-title">Google Search Console · performance</h2>
+        <div class="panel-subtitle">Clicks and impressions over the selected period · daily granularity</div>
+      </div>
+      <div class="panel-tabs">
+        <button class="active">Clicks + impressions</button>
+        <button>Position</button>
+        <button>CTR</button>
+      </div>
+    </div>
+    <div class="chart-wrap">
+      <div class="chart-legend">
+        <span><span class="swatch" style="background:var(--chart-clicks);"></span>Clicks</span>
+        <span><span class="swatch" style="background:var(--chart-impressions);"></span>Impressions (right axis)</span>
+        <span style="margin-left:auto;">Period total · 38,420 clicks · 1.24M impressions · CTR 3.10% · Avg position 8.4</span>
+      </div>
+      <svg class="chart" viewBox="0 0 900 240" id="gsc-chart" xmlns="http://www.w3.org/2000/svg"></svg>
+    </div>
+  </div>
+
+  <!-- TOP QUERIES + TOP PAGES -->
+  <div class="two-col">
+    <div class="panel">
+      <div class="panel-header">
+        <div>
+          <h2 class="panel-title">Top queries · GSC</h2>
+          <div class="panel-subtitle">Highest-clicks queries this period · drill to see CTR by device</div>
+        </div>
+        <a href="#" style="font-size:12px;">View all 1,240 queries →</a>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>Query</th>
+            <th class="right">Clicks</th>
+            <th class="right">Impressions</th>
+            <th class="right">Avg pos</th>
+            <th class="right">Δ pos</th>
+          </tr>
+        </thead>
+        <tbody id="queries-tbody"></tbody>
+      </table>
+    </div>
+
+    <div class="panel">
+      <div class="panel-header">
+        <div>
+          <h2 class="panel-title">Top pages</h2>
+          <div class="panel-subtitle">By clicks · template + URL</div>
+        </div>
+        <a href="#" style="font-size:12px;">View all →</a>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>Page</th>
+            <th class="right">Clicks</th>
+            <th class="right">Pos</th>
+          </tr>
+        </thead>
+        <tbody id="pages-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- GA + COMMERCIAL OVERLAY -->
+  <div class="two-col">
+    <div class="panel">
+      <div class="panel-header">
+        <div>
+          <h2 class="panel-title">Google Analytics 4 · traffic & engagement</h2>
+          <div class="panel-subtitle">Sessions and attributed revenue · 28d</div>
+        </div>
+        <div class="panel-tabs">
+          <button class="active">Sessions + revenue</button>
+          <button>Source/medium</button>
+          <button>Geo</button>
+        </div>
+      </div>
+      <div class="chart-wrap">
+        <div class="chart-legend">
+          <span><span class="swatch" style="background:var(--chart-sessions);"></span>Sessions</span>
+          <span><span class="swatch" style="background:var(--chart-rev);"></span>Attributed revenue (€, right axis)</span>
+          <span style="margin-left:auto;">42,180 sessions · €18,420 revenue · €0.44 EPC</span>
+        </div>
+        <svg class="chart" viewBox="0 0 900 220" id="ga-chart" xmlns="http://www.w3.org/2000/svg"></svg>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-header">
+        <div>
+          <h2 class="panel-title">Commercial funnel</h2>
+          <div class="panel-subtitle">28d · attribution via sub-affiliate identifiers</div>
+        </div>
+      </div>
+      <div class="funnel">
+        <div class="funnel-step step-1"><span>Sessions</span><span class="val">42,180</span></div>
+        <div class="funnel-step step-2"><span>Engaged sessions</span><span class="val">36,280 <span class="pct">86.0%</span></span></div>
+        <div class="funnel-step step-3"><span>Affiliate clicks</span><span class="val">16,210 <span class="pct">38.4%</span></span></div>
+        <div class="funnel-step step-4"><span>FTDs · conversions</span><span class="val">812 <span class="pct">5.0% of clicks</span></span></div>
+        <div class="funnel-step step-5"><span>Attributed revenue</span><span class="val">€18,420 <span class="pct">€22.69 / FTD</span></span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- INDEXATION HEALTH -->
+  <div class="two-col">
+    <div class="panel">
+      <div class="panel-header">
+        <div>
+          <h2 class="panel-title">Indexation health</h2>
+          <div class="panel-subtitle">Indexed pages over 28d · crawl errors and sitemap status</div>
+        </div>
+      </div>
+      <div class="chart-wrap" style="padding-bottom:6px;">
+        <svg class="chart" viewBox="0 0 900 160" id="index-chart" xmlns="http://www.w3.org/2000/svg"></svg>
+      </div>
+      <div class="indexation-grid" style="margin-top:14px;">
+        <div class="stat"><div class="label">Indexed pages</div><div class="value">12,840</div><div class="sub" style="color:var(--good);">+184 vs prior 28d</div></div>
+        <div class="stat"><div class="label">Pages submitted</div><div class="value">13,210</div><div class="sub">97.2% indexed</div></div>
+        <div class="stat"><div class="label">Crawl errors</div><div class="value">14</div><div class="sub" style="color:var(--good);">-9 vs prior 28d</div></div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-header">
+        <div>
+          <h2 class="panel-title">Sitemap & crawler</h2>
+        </div>
+      </div>
+      <table>
+        <tbody>
+          <tr><td class="dim">Sitemap status</td><td class="right"><span class="chip-delta up">✓ Submitted · last fetched 6h ago</span></td></tr>
+          <tr><td class="dim">robots.txt</td><td class="right"><span class="chip-delta up">✓ Valid</span></td></tr>
+          <tr><td class="dim">Core Web Vitals (mobile)</td><td class="right"><span class="chip-delta up">✓ 92 / 88 / 96</span></td></tr>
+          <tr><td class="dim">Manual action</td><td class="right"><span class="chip-delta up">✓ None</span></td></tr>
+          <tr><td class="dim">HTTPS / security</td><td class="right"><span class="chip-delta up">✓ Clean</span></td></tr>
+          <tr><td class="dim">Last GSC reindex request</td><td class="right" style="font-size:12px;">2 days ago · 18 URLs</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- LINK PROFILE -->
+  <div class="two-col">
+    <div class="panel">
+      <div class="panel-header">
+        <div>
+          <h2 class="panel-title">Link profile · authority pipeline</h2>
+          <div class="panel-subtitle">New referring domains last 30 days, by tier · WildBridge link registry</div>
+        </div>
+        <a href="#" style="font-size:12px;">Open link registry →</a>
+      </div>
+      <div style="margin-top:6px;">
+        <div style="display:flex; justify-content:space-between; font-size:13px; margin-bottom:6px;">
+          <span><strong>62</strong> new referring domains · <strong>184</strong> live placements</span>
+          <span class="chip-delta up">▲ 23% vs prior 30d</span>
+        </div>
+        <div class="tier-breakdown">
+          <div class="seg" style="background:var(--tier1); flex:2;">T1 · 2</div>
+          <div class="seg" style="background:var(--tier2); flex:6;">T2 · 6</div>
+          <div class="seg" style="background:var(--tier3); flex:14;">T3 · 14</div>
+          <div class="seg" style="background:var(--tier4); flex:22;">T4 · 22</div>
+          <div class="seg" style="background:var(--tier5); flex:18;">T5 · 18</div>
+        </div>
+        <div class="tier-legend">
+          <span class="li t1">Tier 1 PR</span>
+          <span class="li t2">Tier 2 press release</span>
+          <span class="li t3">Tier 3 niche</span>
+          <span class="li t4">Tier 4 link inserts</span>
+          <span class="li t5">Tier 5 foundational</span>
+        </div>
+      </div>
+      <div style="margin-top:16px;">
+        <table>
+          <thead>
+            <tr>
+              <th>Recent placement</th>
+              <th class="tier-cell">Tier</th>
+              <th class="right">When</th>
+              <th class="right">DR</th>
+            </tr>
+          </thead>
+          <tbody id="links-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-header">
+        <div>
+          <h2 class="panel-title">Content pipeline</h2>
+          <div class="panel-subtitle">Programmatic + editorial activity · last 30 days</div>
+        </div>
+      </div>
+      <div class="pipe-row">
+        <div class="pipe-stat"><div class="label">Generated</div><div class="value">428</div><div class="sub">programmatic</div></div>
+        <div class="pipe-stat"><div class="label">Updated</div><div class="value">1,210</div><div class="sub">data refresh</div></div>
+        <div class="pipe-stat"><div class="label">Pruned</div><div class="value">38</div><div class="sub">low-yield</div></div>
+        <div class="pipe-stat"><div class="label">Editorial</div><div class="value">14</div><div class="sub">human-written</div></div>
+      </div>
+      <div style="margin-top:18px; font-size:12px; color:var(--text-muted);">
+        Active templates: <strong>8</strong> · Avg page age: <strong>112 days</strong> · Cannibalization checks last run: <strong>2026-05-26</strong>, no conflicts with Catena flagships
+      </div>
+    </div>
+  </div>
+
+  <!-- ALERTS & INCIDENT TIMELINE -->
+  <div class="two-col">
+    <div class="panel">
+      <div class="panel-header">
+        <div>
+          <h2 class="panel-title">Active alerts</h2>
+          <div class="panel-subtitle">Live thresholds for this site</div>
+        </div>
+        <a href="#" style="font-size:12px;">Configure thresholds →</a>
+      </div>
+      <table>
+        <tbody>
+          <tr><td class="dim">Indexation drop alert</td><td class="right"><span class="chip-delta up">✓ Quiet</span></td></tr>
+          <tr><td class="dim">Ranking collapse alert</td><td class="right"><span class="chip-delta up">✓ Quiet</span></td></tr>
+          <tr><td class="dim">Manual action alert</td><td class="right"><span class="chip-delta up">✓ Quiet</span></td></tr>
+          <tr><td class="dim">Traffic anomaly alert</td><td class="right"><span class="chip-delta up">✓ Quiet</span></td></tr>
+          <tr><td class="dim">Link velocity alert</td><td class="right"><span class="chip-delta flat">▬ Watching · +23% vs prior 30d, within band</span></td></tr>
+          <tr><td class="dim">Uptime / CWV alert</td><td class="right"><span class="chip-delta up">✓ Quiet</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="panel">
+      <div class="panel-header">
+        <div>
+          <h2 class="panel-title">Recent activity timeline</h2>
+          <div class="panel-subtitle">Last 90 days for this site</div>
+        </div>
+      </div>
+      <div class="timeline" style="margin-top:8px;">
+        <div class="timeline-item info">
+          <div class="when">2026-05-27 · 3 days ago</div>
+          <div class="what">Tier 2 placement live: MarketWatch syndicated feature</div>
+          <div class="why">Anchor: "best crypto casinos for US players" · target: /best-us-crypto-casinos · DR 92</div>
+        </div>
+        <div class="timeline-item">
+          <div class="when">2026-05-24 · 6 days ago</div>
+          <div class="what">Manual review · all checks passed</div>
+          <div class="why">Performed by ops.wildbridge · spot-check on top 20 pages, link mix, CWV</div>
+        </div>
+        <div class="timeline-item info">
+          <div class="when">2026-05-18 · 12 days ago</div>
+          <div class="what">Tier 1 placement live: USA Today article</div>
+          <div class="why">Anchor: "guide to crypto-friendly online casinos" · target: /guide · DR 94</div>
+        </div>
+        <div class="timeline-item">
+          <div class="when">2026-05-12 · 18 days ago</div>
+          <div class="what">Content regeneration cycle · 184 pages updated</div>
+          <div class="why">Triggered by weekly operator data refresh · 14 new operators added to data spine</div>
+        </div>
+        <div class="timeline-item warn">
+          <div class="when">2026-04-30 · 30 days ago</div>
+          <div class="what">Traffic anomaly detected · resolved within 24h</div>
+          <div class="why">12% intraday impression drop traced to Google update · recovered, no action required</div>
+        </div>
+        <div class="timeline-item">
+          <div class="when">2026-04-12 · 48 days ago</div>
+          <div class="what">Site moved to current bulletproof hosting tier</div>
+          <div class="why">Scheduled migration · 0 downtime · CWV improved across all metrics</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer-note">
+    Data sources: Google Search Console · Google Analytics 4 · Sub-affiliate attribution · WildBridge link registry · Site Audit · Uptime · CWV
+  </div>
+
+</div>
+
+<script>
+// --- Inline SVG line chart helper (with two series and dual axes) ---
+function lineChart(svgId, opts) {
+  const svg = document.getElementById(svgId);
+  if (!svg) return;
+  const vb = svg.getAttribute("viewBox").split(" ").map(Number);
+  const W = vb[2], H = vb[3];
+  const padL = opts.padL ?? 44, padR = opts.padR ?? 50, padT = opts.padT ?? 14, padB = opts.padB ?? 28;
+  const plotW = W - padL - padR;
+  const plotH = H - padT - padB;
+  const series = opts.series;
+  const xLabels = opts.xLabels || [];
+
+  // y-axis: each series gets its own scale
+  const ys = series.map(s => {
+    const mn = 0;
+    const mx = Math.max(...s.values) * 1.1;
+    return { min: mn, max: mx };
+  });
+
+  // Build x positions
+  const n = series[0].values.length;
+  const stepX = plotW / (n - 1);
+
+  // Gridlines (4 horizontal)
+  let grid = "";
+  for (let i = 0; i <= 4; i++) {
+    const y = padT + (plotH / 4) * i;
+    grid += `<line x1="${padL}" y1="${y.toFixed(1)}" x2="${padL+plotW}" y2="${y.toFixed(1)}" stroke="#E5E7EB" stroke-width="1" stroke-dasharray="${i===4?'0':'2 3'}"/>`;
+  }
+
+  // Y axis labels (use first series scale for left axis, second for right if exists)
+  let yLabels = "";
+  for (let i = 0; i <= 4; i++) {
+    const y = padT + (plotH / 4) * i;
+    const v = ys[0].max - (ys[0].max - ys[0].min) * (i / 4);
+    yLabels += `<text x="${padL-6}" y="${y+3}" text-anchor="end" font-size="10" fill="#6B7280">${formatTick(v)}</text>`;
+  }
+  if (series.length > 1) {
+    for (let i = 0; i <= 4; i++) {
+      const y = padT + (plotH / 4) * i;
+      const v = ys[1].max - (ys[1].max - ys[1].min) * (i / 4);
+      yLabels += `<text x="${padL+plotW+6}" y="${y+3}" text-anchor="start" font-size="10" fill="#6B7280">${formatTick(v)}</text>`;
+    }
+  }
+
+  // X labels (sparse — show 5 evenly spaced)
+  let xLab = "";
+  for (let i = 0; i < n; i++) {
+    if (i === 0 || i === n - 1 || i === Math.floor(n/4) || i === Math.floor(n/2) || i === Math.floor(3*n/4)) {
+      const x = padL + i * stepX;
+      const lbl = xLabels[i] || (i+1);
+      xLab += `<text x="${x.toFixed(1)}" y="${H-8}" text-anchor="middle" font-size="10" fill="#6B7280">${lbl}</text>`;
+    }
+  }
+
+  // Series paths
+  let paths = "";
+  series.forEach((s, idx) => {
+    const scale = ys[idx];
+    const pts = s.values.map((v, i) => {
+      const x = padL + i * stepX;
+      const y = padT + plotH - ((v - scale.min) / (scale.max - scale.min)) * plotH;
+      return [x, y];
+    });
+    const d = "M " + pts.map(p => p[0].toFixed(1) + "," + p[1].toFixed(1)).join(" L ");
+    const area = d + ` L ${pts[pts.length-1][0].toFixed(1)},${padT+plotH} L ${pts[0][0].toFixed(1)},${padT+plotH} Z`;
+    paths += `<path d="${area}" fill="${s.color}" opacity="${s.areaOpacity ?? 0.10}"/>`;
+    paths += `<path d="${d}" fill="none" stroke="${s.color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>`;
+  });
+
+  svg.innerHTML = grid + paths + yLabels + xLab;
+}
+function formatTick(v) {
+  if (v >= 1000000) return (v/1000000).toFixed(1) + "M";
+  if (v >= 1000) return (v/1000).toFixed(0) + "k";
+  return Math.round(v).toString();
+}
+
+// --- Tiny sparkline (KPI) ---
+function spark(values, color, w = 70, h = 22) {
+  const pad = 2;
+  const min = Math.min(...values), max = Math.max(...values);
+  const range = max - min || 1;
+  const stepX = (w - pad * 2) / (values.length - 1);
+  const pts = values.map((v, i) => {
+    const x = pad + i * stepX;
+    const y = h - pad - ((v - min) / range) * (h - pad * 2);
+    return [x, y];
+  });
+  const d = "M " + pts.map(p => p[0].toFixed(1) + "," + p[1].toFixed(1)).join(" L ");
+  const area = d + ` L ${pts[pts.length-1][0].toFixed(1)},${h-pad} L ${pts[0][0].toFixed(1)},${h-pad} Z`;
+  return `<svg class="spark-kpi" viewBox="0 0 ${w} ${h}" xmlns="http://www.w3.org/2000/svg">
+    <path d="${area}" fill="${color}" opacity="0.15"/>
+    <path d="${d}" fill="none" stroke="${color}" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+  </svg>`;
+}
+
+// --- seeded random for stable sample data ---
+function seeded(seed) {
+  return function() {
+    seed = (seed * 9301 + 49297) % 233280;
+    return seed / 233280;
+  };
+}
+function series(rand, base, drift, noise, n=28) {
+  const out = []; let v = base;
+  for (let i = 0; i < n; i++) {
+    v = v + drift + (rand() - 0.5) * noise;
+    out.push(Math.max(0, v));
+  }
+  return out;
+}
+
+const rand = seeded(42);
+const clicks28 = series(rand, 1100, 18, 280);
+const imp28 = series(rand, 38000, 600, 8500);
+const sess28 = series(rand, 1200, 22, 240);
+const rev28 = series(rand, 480, 14, 110);
+const idx28 = series(rand, 12500, 14, 60);
+
+// X labels for 28 days
+const dayLabels = [];
+const today = new Date(2026, 4, 30); // May 30 2026
+for (let i = 27; i >= 0; i--) {
+  const d = new Date(today.getTime() - i * 24 * 3600 * 1000);
+  dayLabels.push((d.getMonth()+1) + "/" + d.getDate());
+}
+
+// Build charts
+lineChart("gsc-chart", {
+  series: [
+    { name: "Clicks", values: clicks28, color: getComputedStyle(document.documentElement).getPropertyValue("--chart-clicks").trim() },
+    { name: "Impressions", values: imp28, color: getComputedStyle(document.documentElement).getPropertyValue("--chart-impressions").trim() },
+  ],
+  xLabels: dayLabels
+});
+
+lineChart("ga-chart", {
+  series: [
+    { name: "Sessions", values: sess28, color: getComputedStyle(document.documentElement).getPropertyValue("--chart-sessions").trim() },
+    { name: "Revenue", values: rev28, color: getComputedStyle(document.documentElement).getPropertyValue("--chart-rev").trim() },
+  ],
+  xLabels: dayLabels,
+  padT: 10, padB: 26,
+});
+
+lineChart("index-chart", {
+  series: [
+    { name: "Indexed pages", values: idx28, color: getComputedStyle(document.documentElement).getPropertyValue("--chart-clicks").trim(), areaOpacity: 0.15 },
+  ],
+  xLabels: dayLabels,
+  padT: 10, padB: 26, padL: 50, padR: 14
+});
+
+// --- KPI tiles ---
+const kpis = [
+  { label: "Clicks · 28d", value: "38,420", delta: "+14.6%", deltaClass: "up", spark: clicks28, color: "var(--chart-clicks)" },
+  { label: "Impressions · 28d", value: "1.24M", delta: "+11.2%", deltaClass: "up", spark: imp28, color: "var(--chart-impressions)" },
+  { label: "Avg position", value: "8.4", delta: "+1.2 pos", deltaClass: "up", spark: clicks28.map(v=>1/v*1000), color: "var(--chart-clicks)" },
+  { label: "CTR", value: "3.10%", delta: "+0.18 pp", deltaClass: "up", spark: clicks28, color: "var(--chart-clicks)" },
+  { label: "Indexed pages", value: "12,840", delta: "+184", deltaClass: "up", spark: idx28, color: "var(--brand)" },
+  { label: "Attributed revenue", value: "€18,420", delta: "+17.2%", deltaClass: "up", spark: rev28, color: "var(--chart-rev)" },
+];
+const colorMap = {
+  "var(--chart-clicks)": "#2E75B6",
+  "var(--chart-impressions)": "#6D28D9",
+  "var(--chart-rev)": "#15803D",
+  "var(--chart-sessions)": "#0891B2",
+  "var(--brand)": "#2E75B6",
+};
+const kpiRow = document.getElementById("kpi-row");
+kpis.forEach(k => {
+  kpiRow.insertAdjacentHTML("beforeend", `
+    <div class="kpi">
+      <div class="label">${k.label}</div>
+      <div class="value">${k.value}</div>
+      <div class="footer">
+        <span class="delta ${k.deltaClass}">▲ ${k.delta}</span>
+        ${spark(k.spark, colorMap[k.color] || k.color)}
+      </div>
+    </div>
+  `);
+});
+
+// --- Top queries ---
+const queries = [
+  ["best crypto casinos us", 4820, 128400, 4.2, "+1.4"],
+  ["bitcoin casino bonus", 3210, 96200, 6.8, "+2.1"],
+  ["crypto casino no kyc", 2840, 72100, 5.4, "+0.8"],
+  ["ethereum casino sites", 2180, 58400, 7.2, "+1.8"],
+  ["instant withdrawal crypto casino", 1940, 42800, 8.6, "+0.4"],
+  ["best btc slots usa", 1620, 38200, 9.1, "+2.2"],
+  ["litecoin casino reviews", 1280, 31400, 10.4, "+0.6"],
+  ["crypto casino welcome bonus 2026", 1140, 28200, 11.2, "+1.1"],
+];
+const qb = document.getElementById("queries-tbody");
+queries.forEach(([q, c, i, p, dp]) => {
+  qb.insertAdjacentHTML("beforeend", `
+    <tr>
+      <td>${q}</td>
+      <td class="right">${c.toLocaleString()}</td>
+      <td class="right dim">${i.toLocaleString()}</td>
+      <td class="right">${p.toFixed(1)}</td>
+      <td class="right up">${dp}</td>
+    </tr>
+  `);
+});
+
+// --- Top pages ---
+const pages = [
+  ["/best-us-crypto-casinos", "review", 6240, 4.8],
+  ["/guide", "editorial pillar", 4180, 5.2],
+  ["/bitcoin-casinos", "category", 3820, 6.4],
+  ["/no-kyc-crypto-casinos", "category", 2740, 5.1],
+  ["/ethereum-casinos", "category", 2180, 7.4],
+  ["/litecoin-casinos", "category", 1620, 9.2],
+  ["/reviews/[operator]", "template (124 pages)", 5840, 8.6],
+];
+const pb = document.getElementById("pages-tbody");
+pages.forEach(([path, type, c, p]) => {
+  pb.insertAdjacentHTML("beforeend", `
+    <tr>
+      <td><div style="font-size:13px;">${path}</div><div style="font-size:11px;color:var(--text-muted);">${type}</div></td>
+      <td class="right">${c.toLocaleString()}</td>
+      <td class="right">${p.toFixed(1)}</td>
+    </tr>
+  `);
+});
+
+// --- Link placements ---
+const placements = [
+  ["MarketWatch · syndicated feature", "marketwatch.com", "T2", "3 days ago", 92],
+  ["USA Today · crypto casinos guide", "usatoday.com", "T1", "12 days ago", 94],
+  ["CryptoSlate · expert roundup", "cryptoslate.com", "T3", "5 days ago", 78],
+  ["The Sun · casino landscape feature", "thesun.co.uk", "T1", "22 days ago", 92],
+  ["Decrypt · industry briefing", "decrypt.co", "T3", "8 days ago", 82],
+  ["GamblersConnect · podcast mention", "gamblersconnect.com", "T3", "11 days ago", 64],
+  ["Reddit r/cryptocurrency · seeded discussion", "reddit.com", "T5", "2 days ago", 91],
+  ["BestCasinoSites.net · link insert", "bestcasinosites.net", "T4", "6 days ago", 58],
+];
+const lb = document.getElementById("links-tbody");
+placements.forEach(([title, dom, tier, when, dr]) => {
+  const tierClass = tier.toLowerCase();
+  lb.insertAdjacentHTML("beforeend", `
+    <tr>
+      <td><div style="font-size:13px;">${title}</div><div style="font-size:11px;color:var(--text-muted);">${dom}</div></td>
+      <td><span class="tier-tag ${tierClass}">${tier}</span></td>
+      <td class="right dim" style="font-size:12px;">${when}</td>
+      <td class="right" style="font-weight:600;">${dr}</td>
+    </tr>
+  `);
+});
+</script>
+
+</body>
+</html>

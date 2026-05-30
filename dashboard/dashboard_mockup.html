@@ -1,0 +1,832 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>WildBridge Network Dashboard — Cat Media</title>
+<style>
+  :root {
+    --brand: #2E75B6;
+    --brand-dark: #1F4E79;
+    --brand-soft: #EAF1F7;
+    --brand-border: #BDD7EE;
+    --bg: #F4F6FA;
+    --card: #FFFFFF;
+    --text: #1F2937;
+    --text-muted: #6B7280;
+    --border: #E5E7EB;
+    --good: #15803D;
+    --good-soft: #DCFCE7;
+    --warn: #B45309;
+    --warn-soft: #FEF3C7;
+    --bad: #B91C1C;
+    --bad-soft: #FEE2E2;
+    --tier1: #6D28D9;
+    --tier2: #2563EB;
+    --tier3: #0891B2;
+    --tier4: #0F766E;
+    --tier5: #4B5563;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 14px;
+    line-height: 1.45;
+  }
+  /* TOP BAR */
+  .topbar {
+    background: var(--brand-dark);
+    color: #fff;
+    padding: 14px 28px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 3px solid var(--brand);
+  }
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .brand-mark {
+    width: 32px;
+    height: 32px;
+    background: var(--brand);
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 16px;
+    color: #fff;
+    letter-spacing: -0.5px;
+  }
+  .brand-text {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.1;
+  }
+  .brand-text .product { font-weight: 600; font-size: 15px; }
+  .brand-text .client { font-size: 11px; opacity: 0.75; letter-spacing: 0.4px; text-transform: uppercase; }
+  .topbar-right {
+    display: flex;
+    align-items: center;
+    gap: 22px;
+    font-size: 13px;
+    opacity: 0.9;
+  }
+  .topbar-right .user { display: flex; gap: 8px; align-items: center; }
+  .topbar-right .avatar {
+    width: 26px; height: 26px; border-radius: 50%;
+    background: var(--brand); display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 600;
+  }
+  /* CONTAINER */
+  .container { max-width: 1480px; margin: 0 auto; padding: 24px 28px 64px; }
+  /* TITLE ROW */
+  .title-row {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    margin-bottom: 18px;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .title-row h1 {
+    margin: 0;
+    font-size: 24px;
+    color: var(--brand-dark);
+    font-weight: 700;
+    letter-spacing: -0.2px;
+  }
+  .title-row .subtitle {
+    margin-top: 4px;
+    color: var(--text-muted);
+    font-size: 13px;
+  }
+  .period-picker {
+    display: flex;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 2px;
+    font-size: 12px;
+  }
+  .period-picker button {
+    border: none;
+    background: transparent;
+    padding: 6px 12px;
+    cursor: pointer;
+    border-radius: 6px;
+    color: var(--text-muted);
+    font-weight: 500;
+  }
+  .period-picker button.active {
+    background: var(--brand);
+    color: #fff;
+  }
+  /* SUMMARY ROW */
+  .summary {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 12px;
+    margin-bottom: 22px;
+  }
+  .summary-tile {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 16px;
+  }
+  .summary-tile .label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    color: var(--text-muted);
+    font-weight: 600;
+  }
+  .summary-tile .value {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--brand-dark);
+    margin-top: 4px;
+    letter-spacing: -0.3px;
+  }
+  .summary-tile .delta {
+    margin-top: 4px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+  .delta.up { color: var(--good); }
+  .delta.down { color: var(--bad); }
+  .delta.flat { color: var(--text-muted); }
+  /* FILTER STRIP */
+  .filter-strip {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 18px;
+    align-items: center;
+    flex-wrap: wrap;
+    font-size: 13px;
+  }
+  .filter-strip .filter-label { color: var(--text-muted); font-weight: 500; margin-right: 4px; }
+  .filter-chip {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 4px 12px;
+    cursor: pointer;
+    color: var(--text);
+    font-size: 12px;
+  }
+  .filter-chip.active {
+    background: var(--brand);
+    color: #fff;
+    border-color: var(--brand);
+  }
+  .filter-chip.alert-chip {
+    background: var(--bad-soft);
+    color: var(--bad);
+    border-color: var(--bad-soft);
+    font-weight: 600;
+  }
+  /* CARD GRID */
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+  @media (max-width: 1100px) {
+    .card-grid { grid-template-columns: repeat(2, 1fr); }
+    .summary { grid-template-columns: repeat(3, 1fr); }
+  }
+  @media (max-width: 720px) {
+    .card-grid { grid-template-columns: 1fr; }
+    .summary { grid-template-columns: repeat(2, 1fr); }
+  }
+  .site-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px 18px 14px;
+    position: relative;
+    transition: box-shadow 0.15s ease, transform 0.15s ease;
+    cursor: pointer;
+  }
+  .site-card:hover {
+    box-shadow: 0 6px 18px rgba(31, 78, 121, 0.08);
+    transform: translateY(-1px);
+  }
+  .site-card.has-alert {
+    border-color: #FCA5A5;
+    box-shadow: inset 4px 0 0 var(--bad);
+  }
+  .site-card.successor {
+    border-color: var(--brand-border);
+    box-shadow: inset 4px 0 0 var(--brand);
+  }
+  .card-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+  .site-name {
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--brand-dark);
+    line-height: 1.2;
+  }
+  .site-niche {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 2px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .market-flag {
+    background: var(--brand-soft);
+    color: var(--brand-dark);
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-weight: 600;
+    font-size: 10px;
+    letter-spacing: 0.3px;
+  }
+  .card-status {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 6px;
+  }
+  .health-dot {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+  }
+  .health-dot::before {
+    content: "";
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+  }
+  .health-dot.good { color: var(--good); }
+  .health-dot.good::before { background: var(--good); box-shadow: 0 0 0 3px var(--good-soft); }
+  .health-dot.warn { color: var(--warn); }
+  .health-dot.warn::before { background: var(--warn); box-shadow: 0 0 0 3px var(--warn-soft); }
+  .health-dot.bad { color: var(--bad); }
+  .health-dot.bad::before { background: var(--bad); box-shadow: 0 0 0 3px var(--bad-soft); }
+  .tier-badge {
+    font-size: 10px;
+    padding: 2px 7px;
+    border-radius: 4px;
+    color: #fff;
+    font-weight: 700;
+    letter-spacing: 0.4px;
+  }
+  .tier-badge.t1 { background: var(--tier1); }
+  .tier-badge.t2 { background: var(--tier2); }
+  .tier-badge.t3 { background: var(--tier3); }
+  .tier-badge.t4 { background: var(--tier4); }
+  .tier-badge.t5 { background: var(--tier5); }
+  /* METRICS ROW WITH SPARKLINES */
+  .metric-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+  .metric {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 8px 10px;
+    background: #FAFBFC;
+  }
+  .metric .label {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    color: var(--text-muted);
+    font-weight: 600;
+  }
+  .metric .value {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text);
+    margin-top: 2px;
+    line-height: 1.1;
+  }
+  .metric .footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-top: 4px;
+  }
+  .metric .delta {
+    font-size: 11px;
+    font-weight: 600;
+  }
+  .spark { height: 22px; width: 70px; }
+  /* SECONDARY METRICS */
+  .meta-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 8px;
+    padding-top: 10px;
+    border-top: 1px dashed var(--border);
+  }
+  .meta {
+    display: flex;
+    flex-direction: column;
+  }
+  .meta .label {
+    font-size: 10px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    font-weight: 600;
+  }
+  .meta .value {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text);
+    margin-top: 2px;
+  }
+  .meta .value.position { color: var(--brand-dark); }
+  .meta .value.revenue { color: var(--good); }
+  /* ALERT BANNER WITHIN CARD */
+  .alert-banner {
+    background: var(--bad-soft);
+    color: var(--bad);
+    border-radius: 6px;
+    padding: 6px 10px;
+    font-size: 11px;
+    font-weight: 600;
+    margin-top: 12px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .alert-banner::before {
+    content: "!";
+    background: var(--bad);
+    color: #fff;
+    width: 14px; height: 14px;
+    border-radius: 50%;
+    font-size: 10px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+  }
+  .alert-banner.warn-variant { background: var(--warn-soft); color: var(--warn); }
+  .alert-banner.warn-variant::before { content: "⚠"; background: transparent; color: var(--warn); font-size: 12px; }
+  .successor-banner {
+    background: var(--brand-soft);
+    color: var(--brand-dark);
+    border-radius: 6px;
+    padding: 6px 10px;
+    font-size: 11px;
+    font-weight: 600;
+    margin-top: 12px;
+  }
+  .successor-banner::before {
+    content: "↻ ";
+    margin-right: 2px;
+    font-weight: 700;
+  }
+  /* PAGINATION */
+  .pagination {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 24px;
+    padding: 14px 18px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+  }
+  .pagination .info {
+    color: var(--text-muted);
+    font-size: 13px;
+  }
+  .pagination .info strong { color: var(--text); }
+  .pagination .controls { display: flex; gap: 8px; align-items: center; }
+  .pagination button {
+    border: 1px solid var(--border);
+    background: var(--card);
+    padding: 6px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 13px;
+    color: var(--text);
+  }
+  .pagination button.primary {
+    background: var(--brand);
+    color: #fff;
+    border-color: var(--brand);
+  }
+  .pagination button:disabled { opacity: 0.4; cursor: not-allowed; }
+  .pagination .page-indicator {
+    font-size: 13px;
+    color: var(--text-muted);
+    padding: 0 8px;
+  }
+  /* FOOTER */
+  .footer-note {
+    margin-top: 24px;
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 11px;
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="brand">
+    <div class="brand-mark">WB</div>
+    <div class="brand-text">
+      <div class="product">WildBridge Network Operations</div>
+      <div class="client">Cat Media · Managed Network</div>
+    </div>
+  </div>
+  <div class="topbar-right">
+    <span>Network: <strong>50 sites</strong></span>
+    <span>•</span>
+    <span>Last refresh: 14 min ago</span>
+    <div class="user">
+      <div class="avatar">CM</div>
+      <span>catmedia.exec</span>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+  <div class="title-row">
+    <div>
+      <h1>Network overview</h1>
+      <div class="subtitle">Live performance across all 50 sites · drill into any card for the full site report.</div>
+    </div>
+    <div class="period-picker">
+      <button>7d</button>
+      <button class="active">28d</button>
+      <button>90d</button>
+      <button>12m</button>
+    </div>
+  </div>
+
+  <!-- NETWORK SUMMARY -->
+  <div class="summary">
+    <div class="summary-tile">
+      <div class="label">Network clicks</div>
+      <div class="value">847,210</div>
+      <div class="delta up">▲ 12.4% vs prior 28d</div>
+    </div>
+    <div class="summary-tile">
+      <div class="label">Network impressions</div>
+      <div class="value">28.4M</div>
+      <div class="delta up">▲ 8.1%</div>
+    </div>
+    <div class="summary-tile">
+      <div class="label">Avg position</div>
+      <div class="value">14.2</div>
+      <div class="delta up">▲ 1.8 positions</div>
+    </div>
+    <div class="summary-tile">
+      <div class="label">Indexed pages</div>
+      <div class="value">412,680</div>
+      <div class="delta up">▲ 3.7%</div>
+    </div>
+    <div class="summary-tile">
+      <div class="label">Attributed revenue</div>
+      <div class="value">€186,420</div>
+      <div class="delta up">▲ 17.2%</div>
+    </div>
+    <div class="summary-tile">
+      <div class="label">Network health</div>
+      <div class="value" style="display:flex; gap:6px; align-items:center;">
+        <span class="health-dot good" style="font-size:18px;"></span> 46
+        <span style="color:var(--warn); font-size:16px;">3</span>
+        <span style="color:var(--bad); font-size:16px;">1</span>
+      </div>
+      <div class="delta flat">good / warn / alert</div>
+    </div>
+  </div>
+
+  <!-- FILTERS -->
+  <div class="filter-strip">
+    <span class="filter-label">Filter:</span>
+    <span class="filter-chip active">All sites (50)</span>
+    <span class="filter-chip alert-chip">⚠ Active alerts (1)</span>
+    <span class="filter-chip">Top movers (8)</span>
+    <span class="filter-chip">By niche ▾</span>
+    <span class="filter-chip">By market ▾</span>
+    <span class="filter-chip">By tier ▾</span>
+    <span class="filter-chip">Pinned (2)</span>
+  </div>
+
+  <!-- CARD GRID — 9 SITES -->
+  <div class="card-grid" id="card-grid">
+    <!-- Cards inserted by JS for cleanliness -->
+  </div>
+
+  <!-- PAGINATION -->
+  <div class="pagination">
+    <div class="info">Showing <strong>1–9</strong> of <strong>50 sites</strong> · ranked by priority (alerts, week-on-week movement, pinned)</div>
+    <div class="controls">
+      <button disabled>← Prev</button>
+      <span class="page-indicator">Page 1 of 6</span>
+      <button class="primary">Next →</button>
+    </div>
+  </div>
+
+  <div class="footer-note">
+    Data sources: Google Search Console · Google Analytics 4 · Sub-affiliate attribution · WildBridge link registry · Site Audit · Uptime.
+    All metrics reconcile to the underlying tracking identifier.
+  </div>
+
+</div>
+
+<script>
+// --- Sparkline generator: takes array of numbers, returns inline SVG ---
+function spark(values, color) {
+  const w = 70, h = 22, pad = 2;
+  const min = Math.min(...values), max = Math.max(...values);
+  const range = max - min || 1;
+  const stepX = (w - pad * 2) / (values.length - 1);
+  const pts = values.map((v, i) => {
+    const x = pad + i * stepX;
+    const y = h - pad - ((v - min) / range) * (h - pad * 2);
+    return [x, y];
+  });
+  const d = "M " + pts.map(p => p[0].toFixed(1) + "," + p[1].toFixed(1)).join(" L ");
+  // area under curve
+  const area = d + ` L ${pts[pts.length-1][0].toFixed(1)},${h-pad} L ${pts[0][0].toFixed(1)},${h-pad} Z`;
+  return `<svg class="spark" viewBox="0 0 ${w} ${h}" xmlns="http://www.w3.org/2000/svg">
+    <path d="${area}" fill="${color}" opacity="0.15"/>
+    <path d="${d}" fill="none" stroke="${color}" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+  </svg>`;
+}
+
+// realistic-ish 28-point series with a trend
+function series(base, drift, noise) {
+  const arr = [];
+  let v = base;
+  for (let i = 0; i < 28; i++) {
+    v = v + drift + (Math.random() - 0.5) * noise;
+    arr.push(Math.max(0, v));
+  }
+  return arr;
+}
+// reproducible-ish: seed via Math
+function seeded(seed) {
+  return function() {
+    seed = (seed * 9301 + 49297) % 233280;
+    return seed / 233280;
+  };
+}
+const rand = seeded(7);
+function rSeries(base, drift, noise) {
+  const arr = []; let v = base;
+  for (let i = 0; i < 28; i++) {
+    v = v + drift + (rand() - 0.5) * noise;
+    arr.push(Math.max(0, v));
+  }
+  return arr;
+}
+
+const sites = [
+  {
+    domain: "crypto-casinos-us.com",
+    niche: "US crypto casinos",
+    market: "US",
+    tier: 1,
+    health: "good",
+    clicks: 38420,
+    clicksDelta: 14.6,
+    impressions: 1240000,
+    impressionsDelta: 11.2,
+    position: 8.4,
+    indexed: 12840,
+    revenue: "€18,420",
+    series_clicks: rSeries(1100, 18, 220),
+    series_impressions: rSeries(38000, 600, 7000),
+    flag: "pinned"
+  },
+  {
+    domain: "pa-online-casino-guide.com",
+    niche: "Pennsylvania regulated",
+    market: "US-PA",
+    tier: 2,
+    health: "good",
+    clicks: 21680,
+    clicksDelta: 9.1,
+    impressions: 680000,
+    impressionsDelta: 6.4,
+    position: 11.2,
+    indexed: 8620,
+    revenue: "€11,340",
+    series_clicks: rSeries(620, 9, 140),
+    series_impressions: rSeries(20000, 280, 3500),
+  },
+  {
+    domain: "live-dealer-pro.com",
+    niche: "Live dealer games",
+    market: "UK/EU",
+    tier: 2,
+    health: "good",
+    clicks: 19240,
+    clicksDelta: 22.7,
+    impressions: 540000,
+    impressionsDelta: 18.3,
+    position: 9.8,
+    indexed: 6240,
+    revenue: "€14,210",
+    series_clicks: rSeries(450, 22, 100),
+    series_impressions: rSeries(15000, 420, 3000),
+  },
+  {
+    domain: "nodeposit-casino-list.com",
+    niche: "No-deposit bonuses",
+    market: "US",
+    tier: 3,
+    health: "warn",
+    clicks: 14820,
+    clicksDelta: -6.4,
+    impressions: 620000,
+    impressionsDelta: -3.1,
+    position: 16.5,
+    indexed: 5410,
+    revenue: "€7,820",
+    warning: "Ranking softening on 14 head terms — review pending",
+    series_clicks: rSeries(560, -4, 110),
+    series_impressions: rSeries(23000, -120, 4200),
+  },
+  {
+    domain: "mobile-slots-hub.com",
+    niche: "Mobile slots",
+    market: "ROW",
+    tier: 3,
+    health: "good",
+    clicks: 12640,
+    clicksDelta: 7.8,
+    impressions: 420000,
+    impressionsDelta: 5.2,
+    position: 13.4,
+    indexed: 4820,
+    revenue: "€6,140",
+    series_clicks: rSeries(420, 7, 90),
+    series_impressions: rSeries(14000, 180, 2800),
+  },
+  {
+    domain: "high-rtp-slots.com",
+    niche: "High-RTP slot guides",
+    market: "EU",
+    tier: 4,
+    health: "good",
+    clicks: 9840,
+    clicksDelta: 18.4,
+    impressions: 310000,
+    impressionsDelta: 14.6,
+    position: 12.1,
+    indexed: 3640,
+    revenue: "€4,920",
+    series_clicks: rSeries(280, 11, 70),
+    series_impressions: rSeries(9500, 320, 2100),
+  },
+  {
+    domain: "sweepstakes-casino-hub.com",
+    niche: "Sweepstakes casinos",
+    market: "US",
+    tier: 1,
+    health: "bad",
+    clicks: 6210,
+    clicksDelta: -41.2,
+    impressions: 280000,
+    impressionsDelta: -28.5,
+    position: 22.8,
+    indexed: 4120,
+    revenue: "€2,140",
+    alert: "Indexation drop · failover prepped — successor on standby",
+    series_clicks: rSeries(420, -10, 130),
+    series_impressions: rSeries(14000, -380, 3200),
+  },
+  {
+    domain: "ewallet-casinos.com",
+    niche: "E-wallet casinos",
+    market: "EU",
+    tier: 4,
+    health: "good",
+    clicks: 11280,
+    clicksDelta: 4.2,
+    impressions: 380000,
+    impressionsDelta: 2.8,
+    position: 14.7,
+    indexed: 4280,
+    revenue: "€5,640",
+    series_clicks: rSeries(380, 4, 80),
+    series_impressions: rSeries(12500, 140, 2600),
+  },
+  {
+    domain: "low-wager-casinos-v2.com",
+    niche: "Low-wager bonuses",
+    market: "EU",
+    tier: 3,
+    health: "good",
+    clicks: 8420,
+    clicksDelta: 132.4,
+    impressions: 260000,
+    impressionsDelta: 118.7,
+    position: 17.4,
+    indexed: 2840,
+    revenue: "€3,820",
+    successor: "Successor of low-wager-casinos.com · link chain active · D+22",
+    series_clicks: rSeries(80, 32, 80),
+    series_impressions: rSeries(2500, 1100, 2400),
+  },
+];
+
+const grid = document.getElementById("card-grid");
+sites.forEach(site => {
+  const tierClass = "t" + site.tier;
+  const cardClass = site.alert ? "site-card has-alert" : (site.successor ? "site-card successor" : "site-card");
+  const fmt = n => n.toLocaleString("en-US");
+  const deltaClass = site.clicksDelta > 0.5 ? "up" : site.clicksDelta < -0.5 ? "down" : "flat";
+  const deltaSym = site.clicksDelta > 0 ? "▲" : (site.clicksDelta < 0 ? "▼" : "▬");
+  const impDeltaClass = site.impressionsDelta > 0.5 ? "up" : site.impressionsDelta < -0.5 ? "down" : "flat";
+  const impDeltaSym = site.impressionsDelta > 0 ? "▲" : (site.impressionsDelta < 0 ? "▼" : "▬");
+
+  const clickColor = deltaClass === "up" ? "#15803D" : deltaClass === "down" ? "#B91C1C" : "#6B7280";
+  const impColor = impDeltaClass === "up" ? "#2E75B6" : impDeltaClass === "down" ? "#B91C1C" : "#6B7280";
+
+  grid.insertAdjacentHTML("beforeend", `
+    <div class="${cardClass}">
+      <div class="card-head">
+        <div>
+          <div class="site-name">${site.domain}</div>
+          <div class="site-niche">
+            ${site.niche}
+            <span class="market-flag">${site.market}</span>
+          </div>
+        </div>
+        <div class="card-status">
+          <span class="health-dot ${site.health}">${site.health === "good" ? "Healthy" : site.health === "warn" ? "Watching" : "Action"}</span>
+          <span class="tier-badge ${tierClass}">TIER ${site.tier}</span>
+        </div>
+      </div>
+
+      <div class="metric-row">
+        <div class="metric">
+          <div class="label">Clicks · 28d</div>
+          <div class="value">${fmt(site.clicks)}</div>
+          <div class="footer">
+            <span class="delta ${deltaClass}">${deltaSym} ${Math.abs(site.clicksDelta).toFixed(1)}%</span>
+            ${spark(site.series_clicks, clickColor)}
+          </div>
+        </div>
+        <div class="metric">
+          <div class="label">Impressions · 28d</div>
+          <div class="value">${(site.impressions / 1000).toFixed(0)}k</div>
+          <div class="footer">
+            <span class="delta ${impDeltaClass}">${impDeltaSym} ${Math.abs(site.impressionsDelta).toFixed(1)}%</span>
+            ${spark(site.series_impressions, impColor)}
+          </div>
+        </div>
+      </div>
+
+      <div class="meta-row">
+        <div class="meta">
+          <span class="label">Avg position</span>
+          <span class="value position">${site.position.toFixed(1)}</span>
+        </div>
+        <div class="meta">
+          <span class="label">Indexed</span>
+          <span class="value">${fmt(site.indexed)}</span>
+        </div>
+        <div class="meta">
+          <span class="label">Revenue · attributed</span>
+          <span class="value revenue">${site.revenue}</span>
+        </div>
+      </div>
+
+      ${site.alert ? `<div class="alert-banner">${site.alert}</div>` : ""}
+      ${site.warning && !site.alert ? `<div class="alert-banner warn-variant">${site.warning}</div>` : ""}
+      ${site.successor ? `<div class="successor-banner">${site.successor}</div>` : ""}
+    </div>
+  `);
+});
+</script>
+
+</body>
+</html>

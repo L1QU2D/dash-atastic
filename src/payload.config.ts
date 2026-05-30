@@ -8,8 +8,18 @@ import { CloudflareContext, getCloudflareContext } from '@opennextjs/cloudflare'
 import { GetPlatformProxyOptions } from 'wrangler'
 import { r2Storage } from '@payloadcms/storage-r2'
 
+import { Accounts } from './collections/Accounts'
 import { Users } from './collections/Users'
 import { Media } from './collections/Media'
+import { Sites } from './collections/Sites'
+import { SiteMetricsDaily } from './collections/SiteMetricsDaily'
+import { LinkPlacements } from './collections/LinkPlacements'
+import { Alerts } from './collections/Alerts'
+import { AlertConfigs } from './collections/AlertConfigs'
+import { Incidents } from './collections/Incidents'
+import { ContentEvents } from './collections/ContentEvents'
+import { Branding } from './globals/Branding'
+import { NetworkDefaults } from './globals/NetworkDefaults'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -38,10 +48,11 @@ const cloudflareLogger = {
   silent: () => {},
 } as any // Use PayloadLogger type when it's exported
 
-const cloudflare =
-  isCLI || !isProduction
-    ? await getCloudflareContextFromWrangler()
-    : await getCloudflareContext({ async: true })
+const useWranglerProxy = isCLI || !isProduction || !!process.env.USE_WRANGLER_PROXY
+
+const cloudflare = useWranglerProxy
+  ? await getCloudflareContextFromWrangler()
+  : await getCloudflareContext({ async: true })
 
 export default buildConfig({
   admin: {
@@ -50,7 +61,19 @@ export default buildConfig({
       baseDir: path.resolve(dirname),
     },
   },
-  collections: [Users, Media],
+  collections: [
+    Accounts,
+    Users,
+    Media,
+    Sites,
+    SiteMetricsDaily,
+    LinkPlacements,
+    Alerts,
+    AlertConfigs,
+    Incidents,
+    ContentEvents,
+  ],
+  globals: [Branding, NetworkDefaults],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',
   typescript: {

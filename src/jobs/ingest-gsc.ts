@@ -1,0 +1,148 @@
+import type { Payload } from 'payload'
+import { getValidAccessToken } from '@/lib/google-tokens'
+
+const GSC_API_BASE = 'https://www.googleapis.com/webmasters/v3'
+
+/**
+ * GSC ingestion job — pulls daily search analytics for all active sites
+ * via per-account Google OAuth tokens. Intended to run every 6 hours.
+ */
+export async function ingestGSC(payload: Payload): Promise<{ processed: number }> {
+  // Find accounts with Google OAuth connected
+  const accounts = await payload.find({
+    collection: 'accounts',
+    where: {
+      'google_oauth.google_refresh_token': { exists: true },
+    },
+    limit: 0,
+    showHiddenFields: true,
+  })
+
+  let processed = 0
+
+  for (const account of accounts.docs) {
+    if (!account.google_oauth?.google_refresh_token) continue
+
+    const accessToken = await getValidAccessToken(payload, account.id)
+    if (!accessToken) {
+      payload.logger.error(`GSC: failed to get access token for account ${account.id}`)
+      continue
+    }
+
+    // Get sites belonging to this account with GSC property configured
+    const sites = await payload.find({
+      collection: 'sites',
+      where: {
+        and: [
+          { account: { equals: account.id } },
+          { status: { equals: 'active' } },
+          { 'external_ids.gsc_property': { exists: true } },
+        ],
+      },
+      limit: 0,
+    })
+
+    for (const site of sites.docs) {
+      const gscProperty = site.external_ids?.gsc_property
+      if (!gscProperty) continue
+
+      try {
+        // Pull last 3 days to catch reporting lag
+        const endDate = new Date()
+        const startDate = new Date()
+        startDate.setDate(startDate.getDate() - 3)
+
+        const formatDate = (d: Date) => d.toISOString().split('T')[0]
+
+        const res = await fetch(
+          `${GSC_API_BASE}/sites/${encodeURIComponent(gscProperty)}/searchAnalytics/query`,
+          {
+            method: 'POST',
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              startDate: formatDate(startDate),
+              endDate: formatDate(endDate),
+              dimensions: ['date'],
+            }),
+          },
+        )
+
+        if (!res.ok) {
+          const errorText = await res.text()
+          payload.logger.error(`GSC API error for ${site.domain}: ${res.status} ${errorText}`)
+          continue
+        }
+
+        const data = (await res.json()) as {
+          rows?: Array<{
+            keys: string[]
+            clicks: number
+            impressions: number
+            ctr: number
+            position: number
+          }>
+        }
+
+        if (data.rows) {
+          for (const row of data.rows) {
+            const date = row.keys[0] + 'T00:00:00.000Z'
+            await upsertDailyMetrics(payload, site.id, date, {
+              clicks: row.clicks,
+              impressions: row.impressions,
+              ctr: row.ctr,
+              avg_position: row.position,
+            })
+          }
+        }
+
+        payload.logger.info(`GSC: processed ${site.domain} (${data.rows?.length || 0} days)`)
+        processed++
+      } catch (error) {
+        payload.logger.error(`GSC ingestion failed for ${site.domain}: ${error}`)
+      }
+    }
+  }
+
+  return { processed }
+}
+
+/**
+ * Upsert a daily metric row — finds existing record by (site, date) or creates new.
+ */
+export async function upsertDailyMetrics(
+  payload: Payload,
+  siteId: number,
+  date: string,
+  data: Record<string, unknown>,
+): Promise<void> {
+  const existing = await payload.find({
+    collection: 'site_metrics_daily',
+    where: {
+      and: [
+        { site: { equals: siteId } },
+        { date: { equals: date } },
+      ],
+    },
+    limit: 1,
+  })
+
+  if (existing.docs.length > 0) {
+    await payload.update({
+      collection: 'site_metrics_daily',
+      id: existing.docs[0].id,
+      data,
+    })
+  } else {
+    await payload.create({
+      collection: 'site_metrics_daily',
+      data: {
+        site: siteId,
+        date,
+        ...data,
+      },
+    })
+  }
+}
