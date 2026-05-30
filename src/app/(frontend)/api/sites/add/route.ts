@@ -66,7 +66,7 @@ export async function POST(request: NextRequest) {
     )
   }
 
-  await payload.create({
+  const newSite = await payload.create({
     collection: 'sites',
     data: {
       account: accountId,
@@ -81,6 +81,20 @@ export async function POST(request: NextRequest) {
       },
     },
   })
+
+  // Queue immediate GSC ingestion
+  await payload.jobs.queue({
+    task: 'ingest-gsc-site',
+    input: { accountId, siteId: newSite.id },
+  })
+
+  // Queue immediate GA4 ingestion if property was provided
+  if (ga4PropertyId) {
+    await payload.jobs.queue({
+      task: 'ingest-ga4-site',
+      input: { accountId, siteId: newSite.id },
+    })
+  }
 
   return NextResponse.json({ success: true })
 }

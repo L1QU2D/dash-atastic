@@ -5,6 +5,63 @@ import { upsertDailyMetrics } from './ingest-gsc'
 const GA4_API_BASE = 'https://analyticsdata.googleapis.com/v1beta'
 
 /**
+ * Ingest GA4 analytics for a single site.
+ */
+export async function ingestGA4ForSite(
+  payload: Payload,
+  accessToken: string,
+  siteId: number,
+  ga4PropertyId: string,
+): Promise<void> {
+  const res = await fetch(
+    `${GA4_API_BASE}/properties/${ga4PropertyId}:runReport`,
+    {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        dateRanges: [{ startDate: '3daysAgo', endDate: 'today' }],
+        dimensions: [{ name: 'date' }],
+        metrics: [
+          { name: 'sessions' },
+          { name: 'engagedSessions' },
+          { name: 'conversions' },
+        ],
+      }),
+    },
+  )
+
+  if (!res.ok) {
+    const errorText = await res.text()
+    throw new Error(`GA4 API error: ${res.status} ${errorText}`)
+  }
+
+  const data = (await res.json()) as {
+    rows?: Array<{
+      dimensionValues: Array<{ value: string }>
+      metricValues: Array<{ value: string }>
+    }>
+  }
+
+  if (data.rows) {
+    for (const row of data.rows) {
+      const rawDate = row.dimensionValues[0].value // YYYYMMDD format
+      const date = `${rawDate.slice(0, 4)}-${rawDate.slice(4, 6)}-${rawDate.slice(6, 8)}T00:00:00.000Z`
+
+      await upsertDailyMetrics(payload, siteId, date, {
+        sessions: parseInt(row.metricValues[0].value, 10) || 0,
+        engaged_sessions: parseInt(row.metricValues[1].value, 10) || 0,
+        conversions: parseInt(row.metricValues[2].value, 10) || 0,
+      })
+    }
+  }
+
+  payload.logger.info(`GA4: processed site ${siteId} (${data.rows?.length || 0} days)`)
+}
+
+/**
  * GA4 ingestion job — pulls sessions, engaged sessions, and conversions
  * via per-account Google OAuth tokens. Intended to run every 3 hours.
  */
@@ -48,53 +105,7 @@ export async function ingestGA4(payload: Payload): Promise<{ processed: number }
       if (!ga4PropertyId) continue
 
       try {
-        const res = await fetch(
-          `${GA4_API_BASE}/properties/${ga4PropertyId}:runReport`,
-          {
-            method: 'POST',
-            headers: {
-              Authorization: `Bearer ${accessToken}`,
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              dateRanges: [{ startDate: '3daysAgo', endDate: 'today' }],
-              dimensions: [{ name: 'date' }],
-              metrics: [
-                { name: 'sessions' },
-                { name: 'engagedSessions' },
-                { name: 'conversions' },
-              ],
-            }),
-          },
-        )
-
-        if (!res.ok) {
-          const errorText = await res.text()
-          payload.logger.error(`GA4 API error for ${site.domain}: ${res.status} ${errorText}`)
-          continue
-        }
-
-        const data = (await res.json()) as {
-          rows?: Array<{
-            dimensionValues: Array<{ value: string }>
-            metricValues: Array<{ value: string }>
-          }>
-        }
-
-        if (data.rows) {
-          for (const row of data.rows) {
-            const rawDate = row.dimensionValues[0].value // YYYYMMDD format
-            const date = `${rawDate.slice(0, 4)}-${rawDate.slice(4, 6)}-${rawDate.slice(6, 8)}T00:00:00.000Z`
-
-            await upsertDailyMetrics(payload, site.id, date, {
-              sessions: parseInt(row.metricValues[0].value, 10) || 0,
-              engaged_sessions: parseInt(row.metricValues[1].value, 10) || 0,
-              conversions: parseInt(row.metricValues[2].value, 10) || 0,
-            })
-          }
-        }
-
-        payload.logger.info(`GA4: processed ${site.domain} (${data.rows?.length || 0} days)`)
+        await ingestGA4ForSite(payload, accessToken, site.id, ga4PropertyId)
         processed++
       } catch (error) {
         payload.logger.error(`GA4 ingestion failed for ${site.domain}: ${error}`)

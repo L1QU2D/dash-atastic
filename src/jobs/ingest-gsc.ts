@@ -4,6 +4,68 @@ import { getValidAccessToken } from '@/lib/google-tokens'
 const GSC_API_BASE = 'https://www.googleapis.com/webmasters/v3'
 
 /**
+ * Ingest GSC search analytics for a single site.
+ */
+export async function ingestGSCForSite(
+  payload: Payload,
+  accessToken: string,
+  siteId: number,
+  gscProperty: string,
+): Promise<void> {
+  // Pull last 3 days to catch reporting lag
+  const endDate = new Date()
+  const startDate = new Date()
+  startDate.setDate(startDate.getDate() - 3)
+
+  const formatDate = (d: Date) => d.toISOString().split('T')[0]
+
+  const res = await fetch(
+    `${GSC_API_BASE}/sites/${encodeURIComponent(gscProperty)}/searchAnalytics/query`,
+    {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        startDate: formatDate(startDate),
+        endDate: formatDate(endDate),
+        dimensions: ['date'],
+      }),
+    },
+  )
+
+  if (!res.ok) {
+    const errorText = await res.text()
+    throw new Error(`GSC API error: ${res.status} ${errorText}`)
+  }
+
+  const data = (await res.json()) as {
+    rows?: Array<{
+      keys: string[]
+      clicks: number
+      impressions: number
+      ctr: number
+      position: number
+    }>
+  }
+
+  if (data.rows) {
+    for (const row of data.rows) {
+      const date = row.keys[0] + 'T00:00:00.000Z'
+      await upsertDailyMetrics(payload, siteId, date, {
+        clicks: row.clicks,
+        impressions: row.impressions,
+        ctr: row.ctr,
+        avg_position: row.position,
+      })
+    }
+  }
+
+  payload.logger.info(`GSC: processed site ${siteId} (${data.rows?.length || 0} days)`)
+}
+
+/**
  * GSC ingestion job — pulls daily search analytics for all active sites
  * via per-account Google OAuth tokens. Intended to run every 6 hours.
  */
@@ -47,58 +109,7 @@ export async function ingestGSC(payload: Payload): Promise<{ processed: number }
       if (!gscProperty) continue
 
       try {
-        // Pull last 3 days to catch reporting lag
-        const endDate = new Date()
-        const startDate = new Date()
-        startDate.setDate(startDate.getDate() - 3)
-
-        const formatDate = (d: Date) => d.toISOString().split('T')[0]
-
-        const res = await fetch(
-          `${GSC_API_BASE}/sites/${encodeURIComponent(gscProperty)}/searchAnalytics/query`,
-          {
-            method: 'POST',
-            headers: {
-              Authorization: `Bearer ${accessToken}`,
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              startDate: formatDate(startDate),
-              endDate: formatDate(endDate),
-              dimensions: ['date'],
-            }),
-          },
-        )
-
-        if (!res.ok) {
-          const errorText = await res.text()
-          payload.logger.error(`GSC API error for ${site.domain}: ${res.status} ${errorText}`)
-          continue
-        }
-
-        const data = (await res.json()) as {
-          rows?: Array<{
-            keys: string[]
-            clicks: number
-            impressions: number
-            ctr: number
-            position: number
-          }>
-        }
-
-        if (data.rows) {
-          for (const row of data.rows) {
-            const date = row.keys[0] + 'T00:00:00.000Z'
-            await upsertDailyMetrics(payload, site.id, date, {
-              clicks: row.clicks,
-              impressions: row.impressions,
-              ctr: row.ctr,
-              avg_position: row.position,
-            })
-          }
-        }
-
-        payload.logger.info(`GSC: processed ${site.domain} (${data.rows?.length || 0} days)`)
+        await ingestGSCForSite(payload, accessToken, site.id, gscProperty)
         processed++
       } catch (error) {
         payload.logger.error(`GSC ingestion failed for ${site.domain}: ${error}`)

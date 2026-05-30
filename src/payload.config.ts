@@ -8,6 +8,10 @@ import { CloudflareContext, getCloudflareContext } from '@opennextjs/cloudflare'
 import { GetPlatformProxyOptions } from 'wrangler'
 import { r2Storage } from '@payloadcms/storage-r2'
 
+import { getValidAccessToken } from '@/lib/google-tokens'
+import { ingestGSC, ingestGSCForSite } from '@/jobs/ingest-gsc'
+import { ingestGA4, ingestGA4ForSite } from '@/jobs/ingest-ga4'
+
 import { Accounts } from './collections/Accounts'
 import { Users } from './collections/Users'
 import { Media } from './collections/Media'
@@ -87,6 +91,74 @@ export default buildConfig({
       collections: { media: true },
     }),
   ],
+  jobs: {
+    deleteJobOnComplete: true,
+    autoRun: [
+      { cron: '* * * * *', limit: 10 },
+    ],
+    tasks: [
+      {
+        slug: 'ingest-gsc-site',
+        label: 'Ingest GSC for a single site',
+        retries: 2,
+        inputSchema: [
+          { name: 'accountId', type: 'number', required: true },
+          { name: 'siteId', type: 'number', required: true },
+        ],
+        handler: async ({ input, req }) => {
+          const { accountId, siteId } = input as { accountId: number; siteId: number }
+          const accessToken = await getValidAccessToken(req.payload, accountId)
+          if (!accessToken) throw new Error(`Failed to get access token for account ${accountId}`)
+
+          const site = await req.payload.findByID({ collection: 'sites', id: siteId })
+          const gscProperty = site.external_ids?.gsc_property
+          if (!gscProperty) throw new Error(`Site ${siteId} has no GSC property`)
+
+          await ingestGSCForSite(req.payload, accessToken, siteId, gscProperty)
+          return { output: {} }
+        },
+      },
+      {
+        slug: 'ingest-ga4-site',
+        label: 'Ingest GA4 for a single site',
+        retries: 2,
+        inputSchema: [
+          { name: 'accountId', type: 'number', required: true },
+          { name: 'siteId', type: 'number', required: true },
+        ],
+        handler: async ({ input, req }) => {
+          const { accountId, siteId } = input as { accountId: number; siteId: number }
+          const accessToken = await getValidAccessToken(req.payload, accountId)
+          if (!accessToken) throw new Error(`Failed to get access token for account ${accountId}`)
+
+          const site = await req.payload.findByID({ collection: 'sites', id: siteId })
+          const ga4PropertyId = site.external_ids?.ga4_property_id
+          if (!ga4PropertyId) throw new Error(`Site ${siteId} has no GA4 property`)
+
+          await ingestGA4ForSite(req.payload, accessToken, siteId, ga4PropertyId)
+          return { output: {} }
+        },
+      },
+      {
+        slug: 'ingest-gsc',
+        label: 'Ingest GSC for all sites',
+        schedule: [{ cron: '0 */6 * * *', queue: 'default' }],
+        handler: async ({ req }) => {
+          await ingestGSC(req.payload)
+          return { output: {} }
+        },
+      },
+      {
+        slug: 'ingest-ga4',
+        label: 'Ingest GA4 for all sites',
+        schedule: [{ cron: '0 */3 * * *', queue: 'default' }],
+        handler: async ({ req }) => {
+          await ingestGA4(req.payload)
+          return { output: {} }
+        },
+      },
+    ],
+  },
 })
 
 // Adapted from https://github.com/opennextjs/opennextjs-cloudflare/blob/d00b3a13e42e65aad76fba41774815726422cc39/packages/cloudflare/src/api/cloudflare-context.ts#L328C36-L328C46
