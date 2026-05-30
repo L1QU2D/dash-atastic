@@ -1,5 +1,6 @@
 import React from 'react'
 import Link from 'next/link'
+import { LogoutButton } from './LogoutButton'
 
 interface TopbarProps {
   productName: string
@@ -40,6 +41,8 @@ export function Topbar({ productName, customerTag, logoInitials, siteCount, user
           </div>
           <span>{userEmail}</span>
         </div>
+        <span className="opacity-50">|</span>
+        <LogoutButton />
       </div>
     </div>
   )
