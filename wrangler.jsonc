@@ -1,6 +1,6 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "main": ".open-next/worker.js",
+  "main": "worker.js",
   "name": "dash-atastic",
   "compatibility_date": "2025-08-15",
   "compatibility_flags": [
@@ -11,6 +11,9 @@
     // see https://developers.cloudflare.com/workers/configuration/compatibility-flags/#global-fetch-strictly-public
     "global_fetch_strictly_public",
   ],
+  "triggers": {
+    "crons": ["0 */3 * * *"]
+  },
   "routes": [
     { "pattern": "app.atastic.com", "custom_domain": true }
   ],
