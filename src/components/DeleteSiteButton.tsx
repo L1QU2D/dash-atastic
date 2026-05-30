@@ -20,10 +20,11 @@ export function DeleteSiteButton({ siteId }: { siteId: string | number }) {
       if (res.ok) {
         router.refresh()
       } else {
-        setError('Failed to delete')
+        const text = await res.text().catch(() => '')
+        setError(`${res.status}: ${text.slice(0, 100)}`)
       }
-    } catch {
-      setError('Failed to delete')
+    } catch (err) {
+      setError(String(err))
     } finally {
       setDeleting(false)
     }
