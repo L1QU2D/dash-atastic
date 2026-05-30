@@ -53,12 +53,12 @@ export async function POST(request: NextRequest) {
     },
   })
 
-  // Queue immediate GA4 ingestion if a property was connected (not disconnected)
+  // Queue immediate GA4 ingestion if a property was connected (fire-and-forget)
   if (ga4PropertyId) {
-    await payload.jobs.queue({
+    payload.jobs.queue({
       task: 'ingest-ga4-site',
       input: { accountId, siteId },
-    })
+    }).catch((err) => payload.logger.error(`Failed to queue GA4 job for site ${siteId}: ${err}`))
   }
 
   return NextResponse.json({ success: true })

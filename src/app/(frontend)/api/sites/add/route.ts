@@ -82,18 +82,17 @@ export async function POST(request: NextRequest) {
     },
   })
 
-  // Queue immediate GSC ingestion
-  await payload.jobs.queue({
+  // Queue immediate ingestion jobs (fire-and-forget — don't block the response)
+  payload.jobs.queue({
     task: 'ingest-gsc-site',
     input: { accountId, siteId: newSite.id },
-  })
+  }).catch((err) => payload.logger.error(`Failed to queue GSC job for site ${newSite.id}: ${err}`))
 
-  // Queue immediate GA4 ingestion if property was provided
   if (ga4PropertyId) {
-    await payload.jobs.queue({
+    payload.jobs.queue({
       task: 'ingest-ga4-site',
       input: { accountId, siteId: newSite.id },
-    })
+    }).catch((err) => payload.logger.error(`Failed to queue GA4 job for site ${newSite.id}: ${err}`))
   }
 
   return NextResponse.json({ success: true })
