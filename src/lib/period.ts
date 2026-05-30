@@ -33,8 +33,12 @@ export function periodLabel(period: Period): string {
   }
 }
 
+/** GSC data has ~2-day reporting lag; GA4 partial-day data creates a cliff. */
+const DATA_LAG_DAYS = 2
+
 export function getDateRange(period: Period): { start: Date; end: Date } {
   const end = new Date()
+  end.setDate(end.getDate() - DATA_LAG_DAYS)
   end.setHours(23, 59, 59, 999)
   const start = new Date(end)
   start.setDate(start.getDate() - periodToDays(period))
@@ -45,7 +49,7 @@ export function getDateRange(period: Period): { start: Date; end: Date } {
 export function getComparisonRange(period: Period): { start: Date; end: Date } {
   const days = periodToDays(period)
   const end = new Date()
-  end.setDate(end.getDate() - days)
+  end.setDate(end.getDate() - DATA_LAG_DAYS - days)
   end.setHours(23, 59, 59, 999)
   const start = new Date(end)
   start.setDate(start.getDate() - days)
