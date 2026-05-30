@@ -25,7 +25,7 @@ export async function GET() {
   const accessToken = await getValidAccessToken(payload, accountId)
   if (!accessToken) {
     return NextResponse.json(
-      { error: 'Google account not connected' },
+      { error: 'Could not get a valid Google token. Try reconnecting your Google account in Settings.' },
       { status: 400 },
     )
   }

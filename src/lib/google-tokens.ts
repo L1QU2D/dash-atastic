@@ -17,9 +17,6 @@ export async function getValidAccessToken(
     showHiddenFields: true,
   })
 
-  const refreshToken = account.google_oauth?.google_refresh_token
-  if (!refreshToken) return null
-
   const accessToken = account.google_oauth?.google_access_token
   const expiry = account.google_oauth?.google_token_expiry
 
@@ -32,7 +29,10 @@ export async function getValidAccessToken(
     }
   }
 
-  // Token expired or missing — refresh it
+  // Token expired or missing — try to refresh it
+  const refreshToken = account.google_oauth?.google_refresh_token
+  if (!refreshToken) return null
+
   const clientId = process.env.GOOGLE_CLIENT_ID
   const clientSecret = process.env.GOOGLE_CLIENT_SECRET
 
