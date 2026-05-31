@@ -7,6 +7,7 @@ export function AuthForms() {
   const [mode, setMode] = useState<'login' | 'register'>('login')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [company, setCompany] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const router = useRouter()
@@ -30,15 +31,15 @@ export function AuthForms() {
           return
         }
       } else {
-        const res = await fetch('/api/users', {
+        const res = await fetch('/api/auth/register', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email, password, role: 'viewer' }),
+          body: JSON.stringify({ email, password, company }),
           credentials: 'include',
         })
         if (!res.ok) {
-          const data = await res.json() as { errors?: { message: string }[] }
-          setError(data.errors?.[0]?.message || 'Registration failed')
+          const data = await res.json() as { error?: string }
+          setError(data.error || 'Registration failed')
           return
         }
         // Auto-login after registration
@@ -89,6 +90,22 @@ export function AuthForms() {
       </div>
 
       <form onSubmit={handleSubmit}>
+        {mode === 'register' && (
+          <div className="mb-4">
+            <label htmlFor="company" className="mb-1 block text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)]">
+              Company
+            </label>
+            <input
+              id="company"
+              type="text"
+              value={company}
+              onChange={(e) => setCompany(e.target.value)}
+              required
+              placeholder="Your company name"
+              className="w-full rounded-lg border border-[var(--border)] bg-[var(--bg)] px-3 py-2.5 text-sm text-[var(--text)] outline-none transition-colors focus:border-[var(--brand)]"
+            />
+          </div>
+        )}
         <div className="mb-4">
           <label htmlFor="email" className="mb-1 block text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)]">
             Email

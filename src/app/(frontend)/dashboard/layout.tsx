@@ -23,8 +23,11 @@ export default async function DashboardLayout({ children }: { children: React.Re
 
   const accountId = getUserAccountId(user)
 
-  // Get branding config
-  const branding = await payload.findGlobal({ slug: 'branding' })
+  // Get branding config and account name
+  const [branding, account] = await Promise.all([
+    payload.findGlobal({ slug: 'branding' }),
+    payload.findByID({ collection: 'accounts', id: accountId }),
+  ])
 
   // Count active sites scoped by account
   const sitesResult = await payload.find({
@@ -42,7 +45,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
     <>
       <Topbar
         productName={branding.product_name || 'Network Dashboard'}
-        customerTag={branding.customer_tag || ''}
+        customerTag={account.name}
         logoInitials={branding.logo_initials || 'ND'}
         siteCount={sitesResult.totalDocs}
         userEmail={user.email}
