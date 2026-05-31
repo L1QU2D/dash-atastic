@@ -70,7 +70,7 @@ export default async function NetworkOverview({ searchParams }: Props) {
         <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-[var(--brand-soft)] text-2xl font-bold text-[var(--brand)]">
           ND
         </div>
-        <h1 className="mb-2 text-xl font-bold text-[var(--brand-dark)]">Welcome to Network Dashboard</h1>
+        <h1 className="mb-2 text-xl font-bold text-[var(--brand-dark)]">Welcome to Network Operations Dashboard</h1>
         <p className="mb-6 max-w-md text-center text-sm text-[var(--text-muted)]">
           {googleConnected
             ? 'Your network is empty. Add your first site from Google Search Console to get started.'

@@ -24,7 +24,7 @@ export default async function WelcomePage() {
             ND
           </div>
           <h1 className="text-2xl font-bold tracking-tight text-[var(--brand-dark)]">
-            Welcome to Network Dashboard
+            Welcome to Network Operations Dashboard
           </h1>
           <p className="mt-2 text-sm text-[var(--text-muted)]">
             Sign in to your account or register to get started.

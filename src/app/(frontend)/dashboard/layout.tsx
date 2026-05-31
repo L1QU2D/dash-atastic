@@ -7,7 +7,7 @@ import { Topbar } from '@/components/Topbar'
 import { getUserAccountId } from '@/lib/account'
 
 export const metadata = {
-  title: 'Network Dashboard',
+  title: 'Network Operations Dashboard',
   description: 'Network operations dashboard',
 }
 
@@ -44,7 +44,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
   return (
     <>
       <Topbar
-        productName={branding.product_name || 'Network Dashboard'}
+        productName={branding.product_name || 'Network Operations Dashboard'}
         customerTag={account.name}
         logoInitials={branding.logo_initials || 'ND'}
         siteCount={sitesResult.totalDocs}

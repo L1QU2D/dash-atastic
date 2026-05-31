@@ -121,7 +121,7 @@ async function seed() {
   await payload.updateGlobal({
     slug: 'branding',
     data: {
-      product_name: 'Network Dashboard',
+      product_name: 'Network Operations Dashboard',
       customer_tag: 'Cat Media · Managed Network',
       logo_initials: 'ND',
       primary_color: '#2E75B6',

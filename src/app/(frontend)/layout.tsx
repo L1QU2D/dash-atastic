@@ -3,7 +3,7 @@ import '@/styles/globals.css'
 
 export const metadata = {
   description: 'Network operations dashboard',
-  title: 'Network Dashboard',
+  title: 'Network Operations Dashboard',
 }
 
 export default async function RootLayout(props: { children: React.ReactNode }) {
